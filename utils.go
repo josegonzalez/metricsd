@@ -4,7 +4,7 @@ import "bytes"
 import "fmt"
 import "net/http"
 import "syscall"
-import "github.com/Sirupsen/logrus"
+import log "github.com/Sirupsen/logrus"
 
 func Getenv(key string, def string) string {
     v, err := syscall.Getenv(key)
@@ -75,7 +75,7 @@ func SetupTemplate() {
 
     status := ElasticsearchPost("/_template/logstash", data)
     if status != http.StatusOK {
-        logrus.Error("Creating index failed")
+        log.Error("Creating index failed")
     }
 }
 
@@ -88,7 +88,7 @@ func ElasticsearchPost(url string, data []byte) (int) {
     client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
-        logrus.Error("Failed to make request, %v", err)
+        log.Error("Failed to make request, %v", err)
         panic(err)
     }
     defer resp.Body.Close()

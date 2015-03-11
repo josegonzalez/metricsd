@@ -4,16 +4,16 @@ import "encoding/json"
 import "fmt"
 import "time"
 import "github.com/fzzy/radix/redis"
-import "github.com/Sirupsen/logrus"
+import log "github.com/Sirupsen/logrus"
 
 type LogstashHook struct{}
 
-func (hook *LogstashHook) Fire(entry *logrus.Entry) error {
+func (hook *LogstashHook) Fire(entry *log.Entry) error {
     data := MarshalData(entry)
 
     serialized, err := json.Marshal(data)
     if err != nil {
-        logrus.Error("Failed to marshal fields to JSON, %v", err)
+        log.Error("Failed to marshal fields to JSON, %v", err)
         return nil
     }
 
@@ -30,8 +30,8 @@ func (hook *LogstashHook) Fire(entry *logrus.Entry) error {
     return nil
 }
 
-func (hook *LogstashHook) Levels() []logrus.Level {
-  return []logrus.Level{
-    logrus.InfoLevel,
+func (hook *LogstashHook) Levels() []log.Level {
+  return []log.Level{
+    log.InfoLevel,
   }
 }

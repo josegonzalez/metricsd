@@ -3,11 +3,11 @@ package main
 import "encoding/json"
 import "fmt"
 import "os"
-import "github.com/Sirupsen/logrus"
+import log "github.com/Sirupsen/logrus"
 
 type LogstashFormatter struct{}
 
-func (f *LogstashFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+func (f *LogstashFormatter) Format(entry *log.Entry) ([]byte, error) {
     data := MarshalData(entry)
 
     serialized, err := json.Marshal(data)
@@ -17,7 +17,7 @@ func (f *LogstashFormatter) Format(entry *logrus.Entry) ([]byte, error) {
     return append(serialized, '\n'), nil
 }
 
-func prefixFieldClashes(data logrus.Fields) {
+func prefixFieldClashes(data log.Fields) {
     _, ok := data["message"]
     if ok {
         data["fields.message"] = data["message"]
@@ -29,8 +29,8 @@ func prefixFieldClashes(data logrus.Fields) {
     }
 }
 
-func MarshalData(entry *logrus.Entry) (logrus.Fields) {
-    data := make(logrus.Fields, len(entry.Data)+3)
+func MarshalData(entry *log.Entry) (log.Fields) {
+    data := make(log.Fields, len(entry.Data)+3)
     for k, v := range entry.Data {
         // Otherwise errors are ignored by `encoding/json`
         // https://github.com/Sirupsen/logrus/issues/137
