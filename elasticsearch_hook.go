@@ -12,7 +12,7 @@ func (hook *ElasticsearchHook) Fire(entry *log.Entry) error {
 
     serialized, err := json.Marshal(data)
     if err != nil {
-        log.Error("Failed to marshal fields to JSON, %v", err)
+        fmt.Errorf("Failed to marshal fields to JSON, %v", err)
         return nil
     }
 

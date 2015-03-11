@@ -88,7 +88,7 @@ func ElasticsearchPost(url string, data []byte) (int) {
     client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
-        log.Error("Failed to make request, %v", err)
+        fmt.Errorf("Failed to make request, %v", err)
         panic(err)
     }
     defer resp.Body.Close()
