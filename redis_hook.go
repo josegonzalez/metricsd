@@ -19,12 +19,13 @@ func (hook *RedisHook) Fire(entry *log.Entry) error {
 
     redisHost := Getenv("REDIS_HOST", "127.0.0.1")
     redisPort := Getenv("REDIS_PORT", "6379")
+    redisList := Getenv("REDIS_LIST", "metricsd")
 
     c, err := redis.DialTimeout("tcp", fmt.Sprintf("%s:%s", redisHost, redisPort), time.Duration(10)*time.Second)
     errHndlr(err)
     defer c.Close()
 
-    r := c.Cmd("rpush", "metricsd", serialized)
+    r := c.Cmd("rpush", redisList, serialized)
     errHndlr(r.Err)
 
     return nil
