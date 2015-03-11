@@ -1,6 +1,7 @@
 package main
 
 import "encoding/json"
+import "fmt"
 import "net/http"
 import log "github.com/Sirupsen/logrus"
 
@@ -15,7 +16,9 @@ func (hook *ElasticsearchHook) Fire(entry *log.Entry) error {
         return nil
     }
 
-    status := ElasticsearchPost("/logstash-data/metricsd", serialized)
+    entry_index := Getenv("ELASTICSEARCH_INDEX", "logstash-data")
+    entry_type := Getenv("METRIC_TYPE", "metricsd")
+    status := ElasticsearchPost(fmt.Sprintf("/%s/%s", entry_index, entry_type), serialized)
     if status != http.StatusCreated {
         log.Warning("Indexing serialized data failed, %s", err)
     }
