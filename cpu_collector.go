@@ -5,17 +5,17 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type CpuCollector struct { }
 
-func (c *CpuCollector) Collect() (map[string]map[string]uint64, error) {
+func (c *CpuCollector) Collect() (map[string]IntMetricMapping, error) {
     stat, err := linuxproc.ReadStat("/proc/stat")
     if err != nil {
         log.Fatal("stat read fail")
         return nil, err
     }
 
-    cpuMapping := map[string]map[string]uint64{}
+    cpuMapping := map[string]IntMetricMapping{}
 
     for _, s := range stat.CPUStats {
-        cpuMapping[s.Id] = map[string]uint64{
+        cpuMapping[s.Id] = IntMetricMapping{
             "user": s.User,
             "nice": s.Nice,
             "system": s.System,

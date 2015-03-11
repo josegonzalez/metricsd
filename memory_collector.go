@@ -5,14 +5,14 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type MemoryCollector struct { }
 
-func (c *MemoryCollector) Collect() (map[string]uint64, error) {
+func (c *MemoryCollector) Collect() (IntMetricMapping, error) {
     stat, err := linuxproc.ReadMemInfo("/proc/meminfo")
     if err != nil {
         log.Fatal("stat read fail")
         return nil, err
     }
 
-    return map[string]uint64{
+    return IntMetricMapping{
         "memory_total": stat.MemTotal,
         "memory_free": stat.MemFree,
         "buffers": stat.Buffers,
