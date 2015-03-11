@@ -21,17 +21,20 @@ func (c *LoadAvgCollector) Collect() (FloatMetricMapping, error) {
 	}, nil
 }
 
-func (c *LoadAvgCollector) Report() {
+func (c *LoadAvgCollector) Report() ([]log.Fields, error) {
+	var report []log.Fields
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			log.WithFields(log.Fields{
+			report = append(report, log.Fields{
 				"target_type": "gauge",
 				"type":        k,
 				"unit":        "Load",
 				"result":      v,
-			}).Info()
+			})
 		}
 	}
+
+	return report, nil
 }

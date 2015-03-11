@@ -31,18 +31,21 @@ func (c *MemoryCollector) Collect() (IntMetricMapping, error) {
 	}, nil
 }
 
-func (c *MemoryCollector) Report() {
+func (c *MemoryCollector) Report() ([]log.Fields, error) {
+	var report []log.Fields
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			log.WithFields(log.Fields{
+			report = append(report, log.Fields{
 				"target_type": "gauge",
 				"type":        k,
 				"unit":        "B",
 				"where":       "system_memory",
 				"result":      v,
-			}).Info()
+			})
 		}
 	}
+
+	return report, nil
 }

@@ -57,7 +57,8 @@ func (c *DiskspaceCollector) Collect() (map[string]IntMetricMapping, error) {
 	return diskspaceMapping, nil
 }
 
-func (c *DiskspaceCollector) Report() {
+func (c *DiskspaceCollector) Report() ([]log.Fields, error) {
+	var report []log.Fields
 	data, _ := c.Collect()
 
 	if data != nil {
@@ -76,14 +77,16 @@ func (c *DiskspaceCollector) Report() {
 			for k, v := range values {
 				s := strings.Split(k, "_")
 				unit, mtype := s[0], s[1]
-				log.WithFields(log.Fields{
+				report = append(report, log.Fields{
 					"mountpoint":  mountpoint,
 					"target_type": "gauge",
 					"type":        mtype,
 					"unit":        units[unit],
 					"result":      v,
-				}).Info()
+				})
 			}
 		}
 	}
+
+	return report, nil
 }

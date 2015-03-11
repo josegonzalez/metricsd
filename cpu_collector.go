@@ -32,20 +32,23 @@ func (c *CpuCollector) Collect() (map[string]IntMetricMapping, error) {
 	return cpuMapping, nil
 }
 
-func (c *CpuCollector) Report() {
+func (c *CpuCollector) Report() ([]log.Fields, error) {
+	var report []log.Fields
 	data, _ := c.Collect()
 
 	if data != nil {
 		for cpu, values := range data {
 			for k, v := range values {
-				log.WithFields(log.Fields{
+				report = append(report, log.Fields{
 					"target_type": "gauge_pct",
 					"core":        cpu,
 					"type":        k,
 					"unit":        "Jiff",
 					"result":      v,
-				}).Info()
+				})
 			}
 		}
 	}
+
+	return report, nil
 }

@@ -20,17 +20,20 @@ func (c *VmstatCollector) Collect() (IntMetricMapping, error) {
 	}, nil
 }
 
-func (c *VmstatCollector) Report() {
+func (c *VmstatCollector) Report() ([]log.Fields, error) {
+	var report []log.Fields
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			log.WithFields(log.Fields{
+			report = append(report, log.Fields{
 				"target_type": "rate",
 				"type":        k,
 				"unit":        "Page",
 				"result":      v,
-			}).Info()
+			})
 		}
 	}
+
+	return report, nil
 }
