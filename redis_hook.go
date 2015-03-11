@@ -6,9 +6,9 @@ import "time"
 import "github.com/fzzy/radix/redis"
 import log "github.com/Sirupsen/logrus"
 
-type LogstashHook struct{}
+type RedisHook struct{}
 
-func (hook *LogstashHook) Fire(entry *log.Entry) error {
+func (hook *RedisHook) Fire(entry *log.Entry) error {
     data := MarshalData(entry)
 
     serialized, err := json.Marshal(data)
@@ -30,7 +30,7 @@ func (hook *LogstashHook) Fire(entry *log.Entry) error {
     return nil
 }
 
-func (hook *LogstashHook) Levels() []log.Level {
+func (hook *RedisHook) Levels() []log.Level {
   return []log.Level{
     log.InfoLevel,
   }
