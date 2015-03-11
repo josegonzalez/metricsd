@@ -7,18 +7,18 @@ import "syscall"
 import log "github.com/Sirupsen/logrus"
 
 func Getenv(key string, def string) string {
-    v, err := syscall.Getenv(key)
-    if err == true {
-        return def
-    }
-    if v == "" {
-        return def
-    }
-    return v
+	v, err := syscall.Getenv(key)
+	if err == true {
+		return def
+	}
+	if v == "" {
+		return def
+	}
+	return v
 }
 
 func SetupTemplate() {
-    template := `
+	template := `
 {
     "order": 0,
     "template": "logstash-*",
@@ -71,28 +71,27 @@ func SetupTemplate() {
     "aliases": {}
 }
 `
-    var data = []byte(template)
+	var data = []byte(template)
 
-    status := ElasticsearchPost("/_template/logstash", data)
-    if status != http.StatusOK {
-        log.Error("Creating index failed")
-    }
+	status := ElasticsearchPost("/_template/logstash", data)
+	if status != http.StatusOK {
+		log.Error("Creating index failed")
+	}
 }
 
+func ElasticsearchPost(url string, data []byte) int {
+	elasticsearchUrl := Getenv("ELASTICSEARCH_URL", "http://localhost:9200")
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", elasticsearchUrl, url), bytes.NewBuffer(data))
+	req.Header.Set("Content-Type", "application/json")
 
-func ElasticsearchPost(url string, data []byte) (int) {
-    elasticsearchUrl := Getenv("ELASTICSEARCH_URL", "http://localhost:9200")
-    req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", elasticsearchUrl, url), bytes.NewBuffer(data))
-    req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Errorf("Failed to make request, %v", err)
+		panic(err)
+	}
+	defer resp.Body.Close()
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        fmt.Errorf("Failed to make request, %v", err)
-        panic(err)
-    }
-    defer resp.Body.Close()
-
-    return resp.StatusCode
+	return resp.StatusCode
 
 }
