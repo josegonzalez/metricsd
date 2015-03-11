@@ -5,7 +5,7 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type VmstatCollector struct { }
 
-func (c VmstatCollector) Collect() (map[string]uint64, error) {
+func (c *VmstatCollector) Collect() (map[string]uint64, error) {
     stat, err := linuxproc.ReadVMStat("/proc/vmstat")
     if err != nil {
         log.Fatal("stat read fail")
@@ -20,7 +20,7 @@ func (c VmstatCollector) Collect() (map[string]uint64, error) {
     }, nil
 }
 
-func (c VmstatCollector) Report() {
+func (c *VmstatCollector) Report() {
     values, _ := c.Collect()
 
     if values != nil {

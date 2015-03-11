@@ -22,7 +22,7 @@ var filesystems = map[string]bool {
     "btrfs": true,
 }
 
-func (c DiskspaceCollector) Collect() (map[string]map[string]uint64, error) {
+func (c *DiskspaceCollector) Collect() (map[string]map[string]uint64, error) {
     stat, err := linuxproc.ReadMounts("/proc/mounts")
     if err != nil {
         log.Fatal("stat read fail")
@@ -57,7 +57,7 @@ func (c DiskspaceCollector) Collect() (map[string]map[string]uint64, error) {
     return diskspaceMapping, nil
 }
 
-func (c DiskspaceCollector) Report() {
+func (c *DiskspaceCollector) Report() {
     data, _ := c.Collect()
 
     if data != nil {

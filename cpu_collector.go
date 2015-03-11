@@ -5,7 +5,7 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type CpuCollector struct { }
 
-func (c CpuCollector) Collect() (map[string]map[string]uint64, error) {
+func (c *CpuCollector) Collect() (map[string]map[string]uint64, error) {
     stat, err := linuxproc.ReadStat("/proc/stat")
     if err != nil {
         log.Fatal("stat read fail")
@@ -32,7 +32,7 @@ func (c CpuCollector) Collect() (map[string]map[string]uint64, error) {
     return cpuMapping, nil
 }
 
-func (c CpuCollector) Report() {
+func (c *CpuCollector) Report() {
     data, _ := c.Collect()
 
     if data != nil {

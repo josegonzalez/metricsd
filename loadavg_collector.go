@@ -5,7 +5,7 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type LoadAvgCollector struct { }
 
-func (c LoadAvgCollector) Collect() (map[string]float64, error) {
+func (c *LoadAvgCollector) Collect() (map[string]float64, error) {
     stat, err := linuxproc.ReadLoadAvg("/proc/loadavg")
     if err != nil {
         log.Fatal("stat read fail")
@@ -21,7 +21,7 @@ func (c LoadAvgCollector) Collect() (map[string]float64, error) {
     }, nil
 }
 
-func (c LoadAvgCollector) Report() {
+func (c *LoadAvgCollector) Report() {
     values, _ := c.Collect()
 
     if values != nil {

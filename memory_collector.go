@@ -5,7 +5,7 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type MemoryCollector struct { }
 
-func (c MemoryCollector) Collect() (map[string]uint64, error) {
+func (c *MemoryCollector) Collect() (map[string]uint64, error) {
     stat, err := linuxproc.ReadMemInfo("/proc/meminfo")
     if err != nil {
         log.Fatal("stat read fail")
@@ -31,7 +31,7 @@ func (c MemoryCollector) Collect() (map[string]uint64, error) {
     }, nil
 }
 
-func (c MemoryCollector) Report() {
+func (c *MemoryCollector) Report() {
     values, _ := c.Collect()
 
     if values != nil {
