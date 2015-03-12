@@ -9,6 +9,7 @@ type ElasticsearchShipper struct{}
 
 func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
 	log.Debug(fmt.Sprintf("Shipping %d logs", len(logs)))
+
 	index := Getenv("ELASTICSEARCH_INDEX", "logstash-data")
 	metric_type := Getenv("METRIC_TYPE", "metricsd")
 
@@ -33,10 +34,10 @@ func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
 			fmt.Errorf("Failed to marshal fields to JSON, %v", err)
 			return nil
 		}
-		slice = extend(slice, serializedAction)
-		slice = extend(slice, newline)
-		slice = extend(slice, serialized)
-		slice = extend(slice, newline)
+		slice = Extend(slice, serializedAction)
+		slice = Extend(slice, newline)
+		slice = Extend(slice, serialized)
+		slice = Extend(slice, newline)
 	}
 
 	status, err := ElasticsearchPost("/_bulk", slice)
@@ -48,12 +49,4 @@ func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
 		log.Warning("Indexing serialized data failed with status: ", status)
 	}
 	return nil
-}
-
-func extend(slice []byte, sliceTwo []byte) []byte {
-	for i := range sliceTwo {
-		slice = append(slice, sliceTwo[i])
-	}
-
-	return slice
 }
