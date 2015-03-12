@@ -98,16 +98,6 @@ func SetupTemplate() {
 				}
 			],
 			"properties": {
-				"geoip": {
-					"dynamic": true,
-					"path": "full",
-					"properties": {
-						"location": {
-							"type": "geo_point"
-						}
-					},
-					"type": "object"
-				},
 				"@version": {
 					"index": "not_analyzed",
 					"type": "string"
