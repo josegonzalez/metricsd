@@ -11,7 +11,7 @@ func main() {
 	// iostat: (diskstat.go + mangling) /proc/diskstats
 	// sockets: (sockstat.go in a pr) /proc/net/sockstat
 
-  collectors := []CollectorInterface{
+	collectors := []CollectorInterface{
 		&CpuCollector{},
 		&DiskspaceCollector{},
 		&LoadAvgCollector{},
@@ -20,10 +20,10 @@ func main() {
 	}
 
 	var c chan log.Fields = make(chan log.Fields)
-  var collector_wg sync.WaitGroup
-  var reporter_wg sync.WaitGroup
-  collector_wg.Add(len(collectors))
-  reporter_wg.Add(1)
+	var collector_wg sync.WaitGroup
+	var reporter_wg sync.WaitGroup
+	collector_wg.Add(len(collectors))
+	reporter_wg.Add(1)
 
 	for _, collector := range collectors {
 		go func(collector CollectorInterface) {
@@ -72,8 +72,8 @@ func report(c chan log.Fields) {
 		}
 	}
 
-  if len(list) > 0 {
-  	shipper.Ship(list)
+	if len(list) > 0 {
+		shipper.Ship(list)
 		list = nil
 	}
 }

@@ -15,7 +15,7 @@ func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
 	action := ActionMap{
 		"index": IndexMap{
 			"_index": index,
-			"_type": metric_type,
+			"_type":  metric_type,
 		},
 	}
 	serializedAction, err := json.Marshal(action)
@@ -51,9 +51,9 @@ func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
 }
 
 func extend(slice []byte, sliceTwo []byte) []byte {
-  for i := range sliceTwo {
-  	slice = append(slice, sliceTwo[i])
-   }
+	for i := range sliceTwo {
+		slice = append(slice, sliceTwo[i])
+	}
 
-   return slice
+	return slice
 }
