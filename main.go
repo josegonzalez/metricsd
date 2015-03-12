@@ -1,6 +1,5 @@
 package main
 
-import "os"
 import "sync"
 import log "github.com/Sirupsen/logrus"
 
