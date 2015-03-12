@@ -77,10 +77,3 @@ func report(c chan log.Fields) {
 		list = nil
 	}
 }
-
-func errHndlr(err error) {
-	if err != nil {
-		log.Error("error:", err)
-		os.Exit(1)
-	}
-}

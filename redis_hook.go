@@ -36,3 +36,10 @@ func (hook *RedisHook) Levels() []log.Level {
 		log.InfoLevel,
 	}
 }
+
+func errHndlr(err error) {
+	if err != nil {
+		log.Error("error:", err)
+		os.Exit(1)
+	}
+}
