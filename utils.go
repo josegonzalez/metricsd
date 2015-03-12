@@ -73,13 +73,17 @@ func SetupTemplate() {
 `
 	var data = []byte(template)
 
-	status := ElasticsearchPost("/_template/logstash", data)
+	status, err := ElasticsearchPost("/_template/logstash", data)
+	if err != nil {
+		log.Error("Indexing serialized data failed: ", err)
+	}
+
 	if status != http.StatusOK {
 		log.Error("Creating index failed")
 	}
 }
 
-func ElasticsearchPost(url string, data []byte) int {
+func ElasticsearchPost(url string, data []byte) (int, error) {
 	elasticsearchUrl := Getenv("ELASTICSEARCH_URL", "http://localhost:9200")
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", elasticsearchUrl, url), bytes.NewBuffer(data))
 	req.Header.Set("Content-Type", "application/json")
@@ -88,10 +92,9 @@ func ElasticsearchPost(url string, data []byte) int {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Errorf("Failed to make request, %v", err)
-		panic(err)
+		return 0, err
 	}
 	defer resp.Body.Close()
 
-	return resp.StatusCode
-
+	return resp.StatusCode, nil
 }

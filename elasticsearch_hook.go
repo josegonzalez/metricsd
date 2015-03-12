@@ -18,9 +18,13 @@ func (hook *ElasticsearchHook) Fire(entry *log.Entry) error {
 
 	entry_index := Getenv("ELASTICSEARCH_INDEX", "logstash-data")
 	entry_type := Getenv("METRIC_TYPE", "metricsd")
-	status := ElasticsearchPost(fmt.Sprintf("/%s/%s", entry_index, entry_type), serialized)
+	status, err := ElasticsearchPost(fmt.Sprintf("/%s/%s", entry_index, entry_type), serialized)
+	if err != nil {
+		log.Warning("Indexing serialized data failed: ", err)
+	}
+
 	if status != http.StatusCreated {
-		log.Warning("Indexing serialized data failed, %s", err)
+		log.Warning("Indexing serialized data failed: ", err)
 	}
 
 	return nil
