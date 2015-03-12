@@ -43,9 +43,7 @@ func main() {
 }
 
 func initializeLogging() {
-	log.SetLevel(log.InfoLevel)
-	log.SetFormatter(&LogstashFormatter{})
-	log.AddHook(new(ElasticsearchHook))
+	log.SetLevel(log.DebugLevel)
 }
 
 func collect(c chan log.Fields, collector CollectorInterface) {
