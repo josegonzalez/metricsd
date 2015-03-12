@@ -13,7 +13,7 @@ and then run `go run *.go` in this directory
 
 # configuration
 
-- `ELASTICSEARCH_INDEX`: defaults to `logstash-data`
+- `ELASTICSEARCH_INDEX`: defaults to `metricsd-data`
 - `ELASTICSEARCH_URL`: defaults to `http://127.0.0.1:9200`
 - `METRIC_TYPE`: defaults to `metricsd`
 - `REDIS_HOST`: defaults to `127.0.0.1`

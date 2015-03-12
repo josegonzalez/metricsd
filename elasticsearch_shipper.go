@@ -10,7 +10,7 @@ type ElasticsearchShipper struct{}
 func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
 	log.Debug(fmt.Sprintf("Shipping %d logs", len(logs)))
 
-	index := Getenv("ELASTICSEARCH_INDEX", "logstash-data")
+	index := Getenv("ELASTICSEARCH_INDEX", "metricsd-data")
 	metric_type := Getenv("METRIC_TYPE", "metricsd")
 
 	action := ActionMap{
@@ -71,7 +71,7 @@ func SetupTemplate() {
 	template := `
 {
 	"order": 0,
-	"template": "logstash-*",
+	"template": "metricsd-*",
 	"settings": {
 		"index.refresh_interval": "5s"
 	},
@@ -113,7 +113,7 @@ func SetupTemplate() {
 `
 	var data = []byte(template)
 
-	status, err := ElasticsearchPost("/_template/logstash", data)
+	status, err := ElasticsearchPost("/_template/metricsd", data)
 	if err != nil {
 		log.Error("Indexing serialized data failed: ", err)
 	}
