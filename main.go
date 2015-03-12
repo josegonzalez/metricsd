@@ -61,18 +61,19 @@ func collect(c chan log.Fields, collector CollectorInterface) {
 func report(c chan log.Fields) {
 	var list []log.Fields
 
+	shipper := &ElasticsearchShipper{}
+
 	for item := range c {
-		log.WithFields(item).Info()
 		list = append(list, item)
 
 		if len(list) == 10 {
-			// TODO: Ship list
+			shipper.Ship(list)
 			list = nil
 		}
 	}
 
   if len(list) > 0 {
-  	// TODO: Ship list
+  	shipper.Ship(list)
 		list = nil
 	}
 }
