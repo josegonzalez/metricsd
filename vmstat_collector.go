@@ -5,14 +5,14 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type VmstatCollector struct{}
 
-func (c *VmstatCollector) Collect() (IntMetricMapping, error) {
+func (c *VmstatCollector) Collect() (IntMetricMap, error) {
 	stat, err := linuxproc.ReadVMStat("/proc/vmstat")
 	if err != nil {
 		log.Fatal("stat read fail")
 		return nil, err
 	}
 
-	return IntMetricMapping{
+	return IntMetricMap{
 		"paging_in": stat.PagePagein,
 		"pagingout": stat.PagePageout,
 		"swap_in":   stat.PageSwapin,

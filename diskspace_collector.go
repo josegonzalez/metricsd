@@ -22,7 +22,7 @@ var filesystems = map[string]bool{
 	"btrfs":     true,
 }
 
-func (c *DiskspaceCollector) Collect() (map[string]IntMetricMapping, error) {
+func (c *DiskspaceCollector) Collect() (map[string]IntMetricMap, error) {
 	stat, err := linuxproc.ReadMounts("/proc/mounts")
 	if err != nil {
 		log.Fatal("stat read fail")
@@ -30,7 +30,7 @@ func (c *DiskspaceCollector) Collect() (map[string]IntMetricMapping, error) {
 	}
 
 	var statfs_t syscall.Statfs_t
-	diskspaceMapping := map[string]IntMetricMapping{}
+	diskspaceMapping := map[string]IntMetricMap{}
 
 	for _, mount := range stat.Mounts {
 		if !filesystems[mount.FSType] {
@@ -41,7 +41,7 @@ func (c *DiskspaceCollector) Collect() (map[string]IntMetricMapping, error) {
 		byte_avail := statfs_t.Bavail * uint64(statfs_t.Bsize)
 		byte_free := statfs_t.Bfree * uint64(statfs_t.Bsize)
 
-		diskspaceMapping[mount.Device] = IntMetricMapping{
+		diskspaceMapping[mount.Device] = IntMetricMap{
 			"byte_avail": byte_avail,
 			"byte_free":  byte_free,
 			"byte_used":  byte_avail - byte_free,

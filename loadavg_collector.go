@@ -5,7 +5,7 @@ import linuxproc "github.com/c9s/goprocinfo/linux"
 
 type LoadAvgCollector struct{}
 
-func (c *LoadAvgCollector) Collect() (FloatMetricMapping, error) {
+func (c *LoadAvgCollector) Collect() (FloatMetricMap, error) {
 	stat, err := linuxproc.ReadLoadAvg("/proc/loadavg")
 	if err != nil {
 		log.Fatal("stat read fail")
@@ -14,7 +14,7 @@ func (c *LoadAvgCollector) Collect() (FloatMetricMapping, error) {
 
 	// TODO: Add processes_running and processes_total,
 	// unit:processes, type:(running|total)
-	return FloatMetricMapping{
+	return FloatMetricMap{
 		"01": stat.Last1Min,
 		"05": stat.Last5Min,
 		"15": stat.Last15Min,
