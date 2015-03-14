@@ -1,5 +1,6 @@
 package main
 
+import "bytes"
 import "encoding/json"
 import "fmt"
 import "net/http"
@@ -7,9 +8,7 @@ import log "github.com/Sirupsen/logrus"
 
 type ElasticsearchShipper struct{}
 
-func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
-	log.Debug(fmt.Sprintf("Shipping %d logs", len(logs)))
-
+func (hook *ElasticsearchShipper) Ship(logs MetricMapSlice) error {
 	index := Getenv("ELASTICSEARCH_INDEX", "metricsd-data")
 	metric_type := Getenv("METRIC_TYPE", "metricsd")
 
@@ -29,11 +28,7 @@ func (hook *ElasticsearchShipper) Ship(logs []log.Fields) error {
 	newline := []byte("\n")
 
 	for _, item := range logs {
-		serialized, err := json.Marshal(item)
-		if err != nil {
-			fmt.Errorf("Failed to marshal fields to JSON, %v", err)
-			return nil
-		}
+		serialized := MarshalData(item)
 		slice = Extend(slice, serializedAction)
 		slice = Extend(slice, newline)
 		slice = Extend(slice, serialized)

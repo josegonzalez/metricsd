@@ -20,13 +20,13 @@ func (c *VmstatCollector) Collect() (IntMetricMap, error) {
 	}, nil
 }
 
-func (c *VmstatCollector) Report() ([]log.Fields, error) {
-	var report []log.Fields
+func (c *VmstatCollector) Report() (MetricMapSlice, error) {
+	var report MetricMapSlice
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			report = append(report, log.Fields{
+			report = append(report, MetricMap{
 				"target_type": "rate",
 				"type":        k,
 				"unit":        "Page",

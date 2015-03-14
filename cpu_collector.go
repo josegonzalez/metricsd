@@ -32,14 +32,14 @@ func (c *CpuCollector) Collect() (map[string]IntMetricMap, error) {
 	return cpuMapping, nil
 }
 
-func (c *CpuCollector) Report() ([]log.Fields, error) {
-	var report []log.Fields
+func (c *CpuCollector) Report() (MetricMapSlice, error) {
+	var report MetricMapSlice
 	data, _ := c.Collect()
 
 	if data != nil {
 		for cpu, values := range data {
 			for k, v := range values {
-				report = append(report, log.Fields{
+				report = append(report, MetricMap{
 					"target_type": "gauge_pct",
 					"core":        cpu,
 					"type":        k,

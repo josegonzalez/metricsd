@@ -31,13 +31,13 @@ func (c *MemoryCollector) Collect() (IntMetricMap, error) {
 	}, nil
 }
 
-func (c *MemoryCollector) Report() ([]log.Fields, error) {
-	var report []log.Fields
+func (c *MemoryCollector) Report() (MetricMapSlice, error) {
+	var report MetricMapSlice
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			report = append(report, log.Fields{
+			report = append(report, MetricMap{
 				"target_type": "gauge",
 				"type":        k,
 				"unit":        "B",

@@ -1,38 +1,13 @@
 package main
 
+import "encoding/json"
+import "fmt"
 import "os"
-import log "github.com/Sirupsen/logrus"
+import "time"
 
-func prefixFieldClashes(data log.Fields) {
-	_, ok := data["message"]
-	if ok {
-		data["fields.message"] = data["message"]
-	}
-
-	_, ok = data["level"]
-	if ok {
-		data["fields.level"] = data["level"]
-	}
-}
-
-func MarshalData(entry *log.Entry) log.Fields {
-	data := make(log.Fields, len(entry.Data)+3)
-	for k, v := range entry.Data {
-		// Otherwise errors are ignored by `encoding/json`
-		// https://github.com/Sirupsen/logrus/issues/137
-		if err, ok := v.(error); ok {
-			data[k] = err.Error()
-		} else {
-			data[k] = v
-		}
-	}
-	prefixFieldClashes(data)
+func MarshalData(data MetricMap) []byte {
 	data["@version"] = "1"
-	data["@timestamp"] = entry.Time.Format("2006-01-02T15:04:05.000Z")
-	if entry.Message != "" {
-		data["message"] = entry.Message
-		data["level"] = entry.Level.String()
-	}
+	data["@timestamp"] = time.Now().Format("2006-01-02T15:04:05.000Z")
 
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -40,5 +15,11 @@ func MarshalData(entry *log.Entry) log.Fields {
 	}
 
 	data["host"] = hostname
-	return data
+
+	serialized, err := json.Marshal(data)
+	if err != nil {
+		fmt.Errorf("Failed to marshal fields to JSON, %v", err)
+		return nil
+	}
+	return serialized
 }
