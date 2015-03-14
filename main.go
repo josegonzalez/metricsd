@@ -35,7 +35,21 @@ func main() {
 }
 
 func initializeLogging(conf ini.File) {
-	logrus.SetLevel(logrus.DebugLevel)
+	if LogLevel == "panic" {
+		logrus.SetLevel(logrus.PanicLevel)
+	} else if LogLevel == "fatal" {
+		logrus.SetLevel(logrus.FatalLevel)
+	} else if LogLevel == "error" {
+		logrus.SetLevel(logrus.ErrorLevel)
+	} else if LogLevel == "warning" {
+		logrus.SetLevel(logrus.WarnLevel)
+	} else if LogLevel == "info" {
+		logrus.SetLevel(logrus.InfoLevel)
+	} else if LogLevel == "debug" {
+		logrus.SetLevel(logrus.DebugLevel)
+	} else {
+		logrus.SetLevel(logrus.WarnLevel)
+	}
 }
 
 func collect(c chan MetricMap, collector CollectorInterface) {
