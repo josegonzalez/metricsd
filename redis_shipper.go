@@ -4,7 +4,7 @@ import "fmt"
 import "os"
 import "time"
 import "github.com/fzzy/radix/redis"
-import log "github.com/Sirupsen/logrus"
+import "github.com/Sirupsen/logrus"
 
 type RedisShipper struct{}
 
@@ -63,7 +63,7 @@ func (hook *RedisShipper) Ship(logs MetricMapSlice) error {
 
 func errHndlr(err error) {
 	if err != nil {
-		log.Error("error:", err)
+		logrus.Error("error:", err)
 		os.Exit(1)
 	}
 }

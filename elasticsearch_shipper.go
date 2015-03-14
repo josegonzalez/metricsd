@@ -4,7 +4,7 @@ import "bytes"
 import "encoding/json"
 import "fmt"
 import "net/http"
-import log "github.com/Sirupsen/logrus"
+import "github.com/Sirupsen/logrus"
 
 type ElasticsearchShipper struct{}
 
@@ -37,11 +37,11 @@ func (hook *ElasticsearchShipper) Ship(logs MetricMapSlice) error {
 
 	status, err := ElasticsearchPost("/_bulk", slice)
 	if err != nil {
-		log.Warning("Indexing serialized data failed with err: ", err)
+		logrus.Warning("Indexing serialized data failed with err: ", err)
 	}
 
 	if status != http.StatusOK {
-		log.Warning("Indexing serialized data failed with status: ", status)
+		logrus.Warning("Indexing serialized data failed with status: ", status)
 	}
 	return nil
 }
@@ -110,10 +110,10 @@ func SetupTemplate() {
 
 	status, err := ElasticsearchPost("/_template/metricsd", data)
 	if err != nil {
-		log.Error("Indexing serialized data failed: ", err)
+		logrus.Error("Indexing serialized data failed: ", err)
 	}
 
 	if status != http.StatusOK {
-		log.Error("Creating index failed")
+		logrus.Error("Creating index failed")
 	}
 }

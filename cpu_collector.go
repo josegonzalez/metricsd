@@ -1,14 +1,14 @@
 package main
 
-import log "github.com/Sirupsen/logrus"
-import linuxproc "github.com/c9s/goprocinfo/linux"
+import "github.com/Sirupsen/logrus"
+import "github.com/c9s/goprocinfo/linux"
 
 type CpuCollector struct{}
 
 func (c *CpuCollector) Collect() (map[string]IntMetricMap, error) {
-	stat, err := linuxproc.ReadStat("/proc/stat")
+	stat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
-		log.Fatal("stat read fail")
+		logrus.Fatal("stat read fail")
 		return nil, err
 	}
 

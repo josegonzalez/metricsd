@@ -2,8 +2,8 @@ package main
 
 import "strings"
 import "syscall"
-import log "github.com/Sirupsen/logrus"
-import linuxproc "github.com/c9s/goprocinfo/linux"
+import "github.com/Sirupsen/logrus"
+import "github.com/c9s/goprocinfo/linux"
 
 type DiskspaceCollector struct{}
 
@@ -23,9 +23,9 @@ var filesystems = map[string]bool{
 }
 
 func (c *DiskspaceCollector) Collect() (map[string]IntMetricMap, error) {
-	stat, err := linuxproc.ReadMounts("/proc/mounts")
+	stat, err := linux.ReadMounts("/proc/mounts")
 	if err != nil {
-		log.Fatal("stat read fail")
+		logrus.Fatal("stat read fail")
 		return nil, err
 	}
 

@@ -1,14 +1,14 @@
 package main
 
-import log "github.com/Sirupsen/logrus"
-import linuxproc "github.com/c9s/goprocinfo/linux"
+import "github.com/Sirupsen/logrus"
+import "github.com/c9s/goprocinfo/linux"
 
 type MemoryCollector struct{}
 
 func (c *MemoryCollector) Collect() (IntMetricMap, error) {
-	stat, err := linuxproc.ReadMemInfo("/proc/meminfo")
+	stat, err := linux.ReadMemInfo("/proc/meminfo")
 	if err != nil {
-		log.Fatal("stat read fail")
+		logrus.Fatal("stat read fail")
 		return nil, err
 	}
 

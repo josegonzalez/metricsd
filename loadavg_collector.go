@@ -1,14 +1,14 @@
 package main
 
-import log "github.com/Sirupsen/logrus"
-import linuxproc "github.com/c9s/goprocinfo/linux"
+import "github.com/Sirupsen/logrus"
+import "github.com/c9s/goprocinfo/linux"
 
 type LoadAvgCollector struct{}
 
 func (c *LoadAvgCollector) Collect() (FloatMetricMap, error) {
-	stat, err := linuxproc.ReadLoadAvg("/proc/loadavg")
+	stat, err := linux.ReadLoadAvg("/proc/loadavg")
 	if err != nil {
-		log.Fatal("stat read fail")
+		logrus.Fatal("stat read fail")
 		return nil, err
 	}
 

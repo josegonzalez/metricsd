@@ -3,7 +3,7 @@ package main
 import "fmt"
 import "sync"
 import "github.com/vaughan0/go-ini"
-import log "github.com/Sirupsen/logrus"
+import "github.com/Sirupsen/logrus"
 
 func main() {
 	conf := Config()
@@ -46,7 +46,7 @@ func main() {
 }
 
 func initializeLogging(conf ini.File) {
-	log.SetLevel(log.DebugLevel)
+	logrus.SetLevel(logrus.DebugLevel)
 }
 
 func collect(c chan MetricMap, collector CollectorInterface) {
@@ -68,7 +68,7 @@ func report(c chan MetricMap, shippers []ShipperInterface) {
 		list = append(list, item)
 
 		if len(list) == 10 {
-			log.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
+			logrus.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
 			for _, shipper := range shippers {
 				shipper.Ship(list)
 			}
@@ -77,7 +77,7 @@ func report(c chan MetricMap, shippers []ShipperInterface) {
 	}
 
 	if len(list) > 0 {
-		log.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
+		logrus.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
 		for _, shipper := range shippers {
 			shipper.Ship(list)
 		}
@@ -91,19 +91,19 @@ func shippers(conf ini.File) []ShipperInterface {
 
 	enabled, _ = conf.Get("ElasticsearchShipper", "enabled")
 	if enabled == "true" {
-		log.Info("enabling ElasticsearchShipper")
+		logrus.Info("enabling ElasticsearchShipper")
 		shippers = append(shippers, &ElasticsearchShipper{})
 	}
 
 	enabled, _ = conf.Get("StdoutShipper", "enabled")
 	if enabled == "true" {
-		log.Info("enabling StdoutShipper")
+		logrus.Info("enabling StdoutShipper")
 		shippers = append(shippers, &StdoutShipper{})
 	}
 
 	enabled, _ = conf.Get("RedisShipper", "enabled")
 	if enabled == "true" {
-		log.Info("enabling RedisShipper")
+		logrus.Info("enabling RedisShipper")
 		shippers = append(shippers, &RedisShipper{})
 	}
 
