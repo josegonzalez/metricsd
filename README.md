@@ -8,6 +8,7 @@ You need the following go packages
 - github.com/Sirupsen/logrus
 - github.com/fzzy/radix
 - github.com/c9s/goprocinfo
+- github.com/vaughan0/go-ini
 
 and then run `go run *.go` in this directory
 
