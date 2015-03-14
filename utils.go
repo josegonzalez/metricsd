@@ -1,10 +1,6 @@
 package main
 
-import "bytes"
-import "fmt"
-import "net/http"
 import "syscall"
-import log "github.com/Sirupsen/logrus"
 
 func Extend(slice []byte, sliceTwo []byte) []byte {
 	for i := range sliceTwo {
