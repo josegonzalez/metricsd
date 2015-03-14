@@ -107,6 +107,5 @@ func shippers(conf ini.File) []ShipperInterface {
 		shippers = append(shippers, &RedisShipper{})
 	}
 
-
 	return shippers
 }
