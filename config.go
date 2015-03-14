@@ -9,7 +9,7 @@ var LogLevel string
 
 func Setup() ini.File {
 	configFile := flag.String("config", "/etc/metricsd/metricsd.ini", "full path to config file.")
-    loglevel := flag.String("loglevel", "warning", "one of the following loglevels: [debug, info, warning, error, fatal, panic]")
+	loglevel := flag.String("loglevel", "warning", "one of the following loglevels: [debug, info, warning, error, fatal, panic]")
 	flag.Parse()
 
 	if *configFile == "" {
