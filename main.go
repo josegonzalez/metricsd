@@ -94,7 +94,7 @@ func shippers(conf ini.File) []ShipperInterface {
 
 	enabled, _ = conf.Get("ElasticsearchShipper", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling ElasticsearchShipper")
+		logrus.Debug("enabling ElasticsearchShipper")
 		elasticsearchShipper := &ElasticsearchShipper{}
 		elasticsearchShipper.Setup(conf)
 		shippers = append(shippers, elasticsearchShipper)
@@ -102,7 +102,7 @@ func shippers(conf ini.File) []ShipperInterface {
 
 	enabled, _ = conf.Get("StdoutShipper", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling StdoutShipper")
+		logrus.Debug("enabling StdoutShipper")
 		stdoutShipper := &StdoutShipper{}
 		stdoutShipper.Setup(conf)
 		shippers = append(shippers, stdoutShipper)
@@ -110,7 +110,7 @@ func shippers(conf ini.File) []ShipperInterface {
 
 	enabled, _ = conf.Get("RedisShipper", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling RedisShipper")
+		logrus.Debug("enabling RedisShipper")
 		redisShipper := &RedisShipper{}
 		redisShipper.Setup(conf)
 		shippers = append(shippers, redisShipper)
@@ -128,31 +128,31 @@ func collectors(conf ini.File) []CollectorInterface {
 
 	enabled, _ = conf.Get("CpuCollector", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling CpuCollector")
+		logrus.Debug("enabling CpuCollector")
 		collectors = append(collectors, &CpuCollector{})
 	}
 
 	enabled, _ = conf.Get("DiskspaceCollector", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling DiskspaceCollector")
+		logrus.Debug("enabling DiskspaceCollector")
 		collectors = append(collectors, &DiskspaceCollector{})
 	}
 
 	enabled, _ = conf.Get("LoadAvgCollector", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling LoadAvgCollector")
+		logrus.Debug("enabling LoadAvgCollector")
 		collectors = append(collectors, &LoadAvgCollector{})
 	}
 
 	enabled, _ = conf.Get("MemoryCollector", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling MemoryCollector")
+		logrus.Debug("enabling MemoryCollector")
 		collectors = append(collectors, &MemoryCollector{})
 	}
 
 	enabled, _ = conf.Get("VmstatCollector", "enabled")
 	if enabled == "true" {
-		logrus.Info("enabling VmstatCollector")
+		logrus.Debug("enabling VmstatCollector")
 		collectors = append(collectors, &VmstatCollector{})
 	}
 
