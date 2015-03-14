@@ -8,7 +8,6 @@ import "github.com/Sirupsen/logrus"
 func main() {
 	conf := Config()
 	initializeLogging(conf)
-	SetupTemplate()
 	shippers := shippers(conf)
 
 	// iostat: (diskstat.go + mangling) /proc/diskstats
@@ -92,19 +91,25 @@ func shippers(conf ini.File) []ShipperInterface {
 	enabled, _ = conf.Get("ElasticsearchShipper", "enabled")
 	if enabled == "true" {
 		logrus.Info("enabling ElasticsearchShipper")
-		shippers = append(shippers, &ElasticsearchShipper{})
+		elasticsearchShipper := &ElasticsearchShipper{}
+		elasticsearchShipper.Config(conf)
+		shippers = append(shippers, elasticsearchShipper)
 	}
 
 	enabled, _ = conf.Get("StdoutShipper", "enabled")
 	if enabled == "true" {
 		logrus.Info("enabling StdoutShipper")
-		shippers = append(shippers, &StdoutShipper{})
+		stdoutShipper := &StdoutShipper{}
+		stdoutShipper.Config(conf)
+		shippers = append(shippers, stdoutShipper)
 	}
 
 	enabled, _ = conf.Get("RedisShipper", "enabled")
 	if enabled == "true" {
 		logrus.Info("enabling RedisShipper")
-		shippers = append(shippers, &RedisShipper{})
+		redisShipper := &RedisShipper{}
+		redisShipper.Config(conf)
+		shippers = append(shippers, redisShipper)
 	}
 
 	return shippers

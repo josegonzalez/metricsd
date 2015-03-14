@@ -9,14 +9,26 @@ You need the following go packages
 - github.com/fzzy/radix
 - github.com/c9s/goprocinfo
 - github.com/vaughan0/go-ini
+- github.com/josegonzalez/go-radixurl
 
-and then run `go run *.go` in this directory
+and then run `go run *.go -config=path/to/config.ini` in this directory
 
 # configuration
 
-- `ELASTICSEARCH_INDEX`: defaults to `metricsd-data`
-- `ELASTICSEARCH_URL`: defaults to `http://127.0.0.1:9200`
-- `METRIC_TYPE`: defaults to `metricsd`
-- `REDIS_HOST`: defaults to `127.0.0.1`
-- `REDIS_LIST`: defaults to `metricsd`
-- `REDIS_PORT`: defaults to `6379`
+create an ini file with the following contents:
+
+```
+[ElasticsearchShipper]
+enabled = true
+index = metricsd-data
+type = metricsd
+url = http://127.0.0.1:9200
+
+[RedisShipper]
+enabled = true
+url = redis://127.0.0.1:6379/0
+list = metricsd
+
+[StdoutShipper]
+enabled = true
+```

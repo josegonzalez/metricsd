@@ -1,20 +1,30 @@
 package main
 
-import "fmt"
-import "time"
-import "github.com/fzzy/radix/redis"
 import "github.com/Sirupsen/logrus"
+import "github.com/vaughan0/go-ini"
+import "github.com/josegonzalez/go-radixurl"
 
 type RedisShipper struct{}
 
-func (hook *RedisShipper) Ship(logs MetricMapSlice) error {
-	length := len(logs)
+var redisList string
+var redisUrl string
 
-	redisHost := Getenv("REDIS_HOST", "127.0.0.1")
-	redisPort := Getenv("REDIS_PORT", "6379")
-	redisList := Getenv("REDIS_LIST", "metricsd")
+func (shipper *RedisShipper) Config(conf ini.File) {
+	redisList = "metricsd"
+	useRedisList, ok := conf.Get("RedisShipper", "list")
+	if ok {
+		redisList = useRedisList
+	}
 
-	c, err := redis.DialTimeout("tcp", fmt.Sprintf("%s:%s", redisHost, redisPort), time.Duration(10)*time.Second)
+	redisUrl = "redis://127.0.0.1:6379/0"
+	useRedisUrl, ok := conf.Get("RedisShipper", "url")
+	if ok {
+		redisUrl = useRedisUrl
+	}
+}
+
+func (shipper *RedisShipper) Ship(logs MetricMapSlice) error {
+	c, err := radixurl.ConnectToURL(redisUrl)
 	errHndlr(err)
 	defer c.Close()
 
@@ -25,6 +35,7 @@ func (hook *RedisShipper) Ship(logs MetricMapSlice) error {
 		list = append(list, string(serialized))
 	}
 
+	length := len(logs)
 	if length == 10 {
 		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9])
 		errHndlr(r.Err)

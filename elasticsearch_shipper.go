@@ -5,17 +5,41 @@ import "encoding/json"
 import "fmt"
 import "net/http"
 import "github.com/Sirupsen/logrus"
+import "github.com/vaughan0/go-ini"
 
 type ElasticsearchShipper struct{}
 
-func (hook *ElasticsearchShipper) Ship(logs MetricMapSlice) error {
-	index := Getenv("ELASTICSEARCH_INDEX", "metricsd-data")
-	metric_type := Getenv("METRIC_TYPE", "metricsd")
+var elasticsearchUrl string
+var index string
+var metricType string
 
+func (shipper *ElasticsearchShipper) Config(conf ini.File) {
+	elasticsearchUrl = "http://127.0.0.1:9200"
+	useElasticsearchUrl, ok := conf.Get("ElasticsearchShipper", "url")
+	if ok {
+		elasticsearchUrl = useElasticsearchUrl
+	}
+
+	index = "metricsd-data"
+	useIndex, ok := conf.Get("ElasticsearchShipper", "enabled")
+	if ok {
+		index = useIndex
+	}
+
+	metricType = "metricsd"
+	useMetricType, ok := conf.Get("ElasticsearchShipper", "type")
+	if ok {
+		metricType = useMetricType
+	}
+
+	SetupTemplate()
+}
+
+func (shipper *ElasticsearchShipper) Ship(logs MetricMapSlice) error {
 	action := ActionMap{
 		"index": IndexMap{
 			"_index": index,
-			"_type":  metric_type,
+			"_type":  metricType,
 		},
 	}
 	serializedAction, err := json.Marshal(action)
@@ -47,7 +71,6 @@ func (hook *ElasticsearchShipper) Ship(logs MetricMapSlice) error {
 }
 
 func ElasticsearchPost(url string, data []byte) (int, error) {
-	elasticsearchUrl := Getenv("ELASTICSEARCH_URL", "http://127.0.0.1:9200")
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", elasticsearchUrl, url), bytes.NewBuffer(data))
 	req.Header.Set("Content-Type", "application/json")
 
