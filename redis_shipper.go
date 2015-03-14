@@ -1,7 +1,6 @@
 package main
 
 import "fmt"
-import "os"
 import "time"
 import "github.com/fzzy/radix/redis"
 import "github.com/Sirupsen/logrus"
@@ -63,7 +62,6 @@ func (hook *RedisShipper) Ship(logs MetricMapSlice) error {
 
 func errHndlr(err error) {
 	if err != nil {
-		logrus.Error("error:", err)
-		os.Exit(1)
+		logrus.Fatal("redis error: ", err)
 	}
 }
