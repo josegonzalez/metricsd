@@ -9,17 +9,7 @@ func main() {
 	conf := Setup()
 	initializeLogging(conf)
 	shippers := shippers(conf)
-
-	// iostat: (diskstat.go + mangling) /proc/diskstats
-	// sockets: (sockstat.go in a pr) /proc/net/sockstat
-
-	collectors := []CollectorInterface{
-		&CpuCollector{},
-		&DiskspaceCollector{},
-		&LoadAvgCollector{},
-		&MemoryCollector{},
-		&VmstatCollector{},
-	}
+	collectors := collectors(conf)
 
 	var c chan MetricMap = make(chan MetricMap)
 	var collector_wg sync.WaitGroup
@@ -113,4 +103,44 @@ func shippers(conf ini.File) []ShipperInterface {
 	}
 
 	return shippers
+}
+
+func collectors(conf ini.File) []CollectorInterface {
+	var collectors []CollectorInterface
+	var enabled string
+
+	// iostat: (diskstat.go + mangling) /proc/diskstats
+	// sockets: (sockstat.go in a pr) /proc/net/sockstat
+
+	enabled, _ = conf.Get("CpuCollector", "enabled")
+	if enabled == "true" {
+		logrus.Info("enabling CpuCollector")
+		collectors = append(collectors, &CpuCollector{})
+	}
+
+	enabled, _ = conf.Get("DiskspaceCollector", "enabled")
+	if enabled == "true" {
+		logrus.Info("enabling DiskspaceCollector")
+		collectors = append(collectors, &DiskspaceCollector{})
+	}
+
+	enabled, _ = conf.Get("LoadAvgCollector", "enabled")
+	if enabled == "true" {
+		logrus.Info("enabling LoadAvgCollector")
+		collectors = append(collectors, &LoadAvgCollector{})
+	}
+
+	enabled, _ = conf.Get("MemoryCollector", "enabled")
+	if enabled == "true" {
+		logrus.Info("enabling MemoryCollector")
+		collectors = append(collectors, &MemoryCollector{})
+	}
+
+	enabled, _ = conf.Get("VmstatCollector", "enabled")
+	if enabled == "true" {
+		logrus.Info("enabling VmstatCollector")
+		collectors = append(collectors, &VmstatCollector{})
+	}
+
+	return collectors
 }

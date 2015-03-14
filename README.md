@@ -15,7 +15,9 @@ and then run `go run *.go -config=path/to/config.ini` in this directory
 
 # configuration
 
-create an ini file with the following contents:
+Collectors and Shippers are configured in an `ini` file. You *must* specify `enabled = true` under the stanza for that collector/shipper in order to enable it. Other configuration for the respective collector/shipper can also be place in those sections.
+
+Below is a sample `config.ini`:
 
 ```
 [ElasticsearchShipper]
@@ -30,5 +32,20 @@ url = redis://127.0.0.1:6379/0
 list = metricsd
 
 [StdoutShipper]
+enabled = true
+
+[CpuCollector]
+enabled = true
+
+[DiskspaceCollector]
+enabled = true
+
+[LoadAvgCollector]
+enabled = true
+
+[MemoryCollector]
+enabled = true
+
+[VmstatCollector]
 enabled = true
 ```
