@@ -133,10 +133,10 @@ func SetupTemplate() {
 
 	status, err := ElasticsearchPost("/_template/metricsd", data)
 	if err != nil {
-		logrus.Error("Indexing serialized data failed: ", err)
+		logrus.Fatal("Creating index failed: ", err)
 	}
 
 	if status != http.StatusOK {
-		logrus.Error("Creating index failed")
+		logrus.Fatal("Creating index failed")
 	}
 }
