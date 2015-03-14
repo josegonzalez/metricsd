@@ -9,7 +9,7 @@ type RedisShipper struct{}
 var redisList string
 var redisUrl string
 
-func (shipper *RedisShipper) Config(conf ini.File) {
+func (shipper *RedisShipper) Setup(conf ini.File) {
 	redisList = "metricsd"
 	useRedisList, ok := conf.Get("RedisShipper", "list")
 	if ok {

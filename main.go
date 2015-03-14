@@ -6,7 +6,7 @@ import "github.com/vaughan0/go-ini"
 import "github.com/Sirupsen/logrus"
 
 func main() {
-	conf := Config()
+	conf := Setup()
 	initializeLogging(conf)
 	shippers := shippers(conf)
 
@@ -92,7 +92,7 @@ func shippers(conf ini.File) []ShipperInterface {
 	if enabled == "true" {
 		logrus.Info("enabling ElasticsearchShipper")
 		elasticsearchShipper := &ElasticsearchShipper{}
-		elasticsearchShipper.Config(conf)
+		elasticsearchShipper.Setup(conf)
 		shippers = append(shippers, elasticsearchShipper)
 	}
 
@@ -100,7 +100,7 @@ func shippers(conf ini.File) []ShipperInterface {
 	if enabled == "true" {
 		logrus.Info("enabling StdoutShipper")
 		stdoutShipper := &StdoutShipper{}
-		stdoutShipper.Config(conf)
+		stdoutShipper.Setup(conf)
 		shippers = append(shippers, stdoutShipper)
 	}
 
@@ -108,7 +108,7 @@ func shippers(conf ini.File) []ShipperInterface {
 	if enabled == "true" {
 		logrus.Info("enabling RedisShipper")
 		redisShipper := &RedisShipper{}
-		redisShipper.Config(conf)
+		redisShipper.Setup(conf)
 		shippers = append(shippers, redisShipper)
 	}
 

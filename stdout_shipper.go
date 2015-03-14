@@ -5,7 +5,7 @@ import "github.com/vaughan0/go-ini"
 
 type StdoutShipper struct{}
 
-func (shipper *StdoutShipper) Config(_ ini.File) {
+func (shipper *StdoutShipper) Setup(_ ini.File) {
 }
 
 func (shipper *StdoutShipper) Ship(logs MetricMapSlice) error {

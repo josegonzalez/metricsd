@@ -13,7 +13,7 @@ var elasticsearchUrl string
 var index string
 var metricType string
 
-func (shipper *ElasticsearchShipper) Config(conf ini.File) {
+func (shipper *ElasticsearchShipper) Setup(conf ini.File) {
 	elasticsearchUrl = "http://127.0.0.1:9200"
 	useElasticsearchUrl, ok := conf.Get("ElasticsearchShipper", "url")
 	if ok {

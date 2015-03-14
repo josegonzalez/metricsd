@@ -4,5 +4,5 @@ import "github.com/vaughan0/go-ini"
 
 type ShipperInterface interface {
 	Ship(MetricMapSlice) error
-	Config(ini.File)
+	Setup(ini.File)
 }

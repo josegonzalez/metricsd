@@ -5,7 +5,7 @@ import "os"
 import "github.com/vaughan0/go-ini"
 import "github.com/Sirupsen/logrus"
 
-func Config() ini.File {
+func Setup() ini.File {
 	configFile := flag.String("config", "", "full path to config file.")
 	flag.Parse()
 
