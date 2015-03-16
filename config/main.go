@@ -1,16 +1,16 @@
 package config
 
-import "flag"
 import "os"
-import "github.com/vaughan0/go-ini"
+import "github.com/ogier/pflag"
 import "github.com/Sirupsen/logrus"
+import "github.com/vaughan0/go-ini"
 
 var LogLevel string
 
 func Setup() ini.File {
-	configFile := flag.String("config", "/etc/metricsd/metricsd.ini", "full path to config file.")
-	loglevel := flag.String("loglevel", "warning", "one of the following loglevels: [debug, info, warning, error, fatal, panic]")
-	flag.Parse()
+	configFile := pflag.String("config", "/etc/metricsd/metricsd.ini", "full path to config file.")
+	loglevel := pflag.String("loglevel", "warning", "one of the following loglevels: [debug, info, warning, error, fatal, panic]")
+	pflag.Parse()
 
 	if *configFile == "" {
 		logrus.Fatal("config file not specified")
