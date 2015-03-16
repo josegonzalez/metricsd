@@ -5,26 +5,26 @@ import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type RedisShipper struct{}
+type LogstashRedisShipper struct{}
 
 var redisList string
 var redisUrl string
 
-func (shipper *RedisShipper) Setup(conf ini.File) {
+func (shipper *LogstashRedisShipper) Setup(conf ini.File) {
 	redisList = "metricsd"
-	useRedisList, ok := conf.Get("RedisShipper", "list")
+	useRedisList, ok := conf.Get("LogstashRedisShipper", "list")
 	if ok {
 		redisList = useRedisList
 	}
 
 	redisUrl = "redis://127.0.0.1:6379/0"
-	useRedisUrl, ok := conf.Get("RedisShipper", "url")
+	useRedisUrl, ok := conf.Get("LogstashRedisShipper", "url")
 	if ok {
 		redisUrl = useRedisUrl
 	}
 }
 
-func (shipper *RedisShipper) Ship(logs mappings.MetricMapSlice) error {
+func (shipper *LogstashRedisShipper) Ship(logs mappings.MetricMapSlice) error {
 	c, err := radixurl.ConnectToURL(redisUrl)
 	errHndlr(err)
 	defer c.Close()
@@ -32,7 +32,7 @@ func (shipper *RedisShipper) Ship(logs mappings.MetricMapSlice) error {
 	var list []string
 
 	for _, item := range logs {
-		serialized := MarshalData(item)
+		serialized := MarshallForLogstash(item)
 		list = append(list, string(serialized))
 	}
 

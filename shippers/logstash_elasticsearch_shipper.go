@@ -9,27 +9,27 @@ import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/josegonzalez/metricsd/utils"
 import "github.com/vaughan0/go-ini"
 
-type ElasticsearchShipper struct{}
+type LogstashElasticsearchShipper struct{}
 
 var elasticsearchUrl string
 var index string
 var metricType string
 
-func (shipper *ElasticsearchShipper) Setup(conf ini.File) {
+func (shipper *LogstashElasticsearchShipper) Setup(conf ini.File) {
 	elasticsearchUrl = "http://127.0.0.1:9200"
-	useElasticsearchUrl, ok := conf.Get("ElasticsearchShipper", "url")
+	useElasticsearchUrl, ok := conf.Get("LogstashElasticsearchShipper", "url")
 	if ok {
 		elasticsearchUrl = useElasticsearchUrl
 	}
 
 	index = "metricsd-data"
-	useIndex, ok := conf.Get("ElasticsearchShipper", "enabled")
+	useIndex, ok := conf.Get("LogstashElasticsearchShipper", "enabled")
 	if ok {
 		index = useIndex
 	}
 
 	metricType = "metricsd"
-	useMetricType, ok := conf.Get("ElasticsearchShipper", "type")
+	useMetricType, ok := conf.Get("LogstashElasticsearchShipper", "type")
 	if ok {
 		metricType = useMetricType
 	}
@@ -37,7 +37,7 @@ func (shipper *ElasticsearchShipper) Setup(conf ini.File) {
 	SetupTemplate()
 }
 
-func (shipper *ElasticsearchShipper) Ship(logs mappings.MetricMapSlice) error {
+func (shipper *LogstashElasticsearchShipper) Ship(logs mappings.MetricMapSlice) error {
 	action := mappings.ActionMap{
 		"index": mappings.IndexMap{
 			"_index": index,
@@ -54,7 +54,7 @@ func (shipper *ElasticsearchShipper) Ship(logs mappings.MetricMapSlice) error {
 	newline := []byte("\n")
 
 	for _, item := range logs {
-		serialized := MarshalData(item)
+		serialized := MarshallForLogstash(item)
 		slice = utils.Extend(slice, serializedAction)
 		slice = utils.Extend(slice, newline)
 		slice = utils.Extend(slice, serialized)

@@ -11,7 +11,7 @@ func (shipper *StdoutShipper) Setup(_ ini.File) {
 
 func (shipper *StdoutShipper) Ship(logs mappings.MetricMapSlice) error {
 	for _, item := range logs {
-		serialized := MarshalData(item)
+		serialized := MarshallForLogstash(item)
 		fmt.Printf("%s\n", string(serialized))
 	}
 

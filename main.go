@@ -96,10 +96,10 @@ func getShippers(conf ini.File) []shippers.ShipperInterface {
 	var shipperList []shippers.ShipperInterface
 	var enabled string
 
-	enabled, _ = conf.Get("ElasticsearchShipper", "enabled")
+	enabled, _ = conf.Get("LogstashElasticsearchShipper", "enabled")
 	if enabled == "true" {
-		logrus.Debug("enabling ElasticsearchShipper")
-		elasticsearchShipper := &shippers.ElasticsearchShipper{}
+		logrus.Debug("enabling LogstashElasticsearchShipper")
+		elasticsearchShipper := &shippers.LogstashElasticsearchShipper{}
 		elasticsearchShipper.Setup(conf)
 		shipperList = append(shipperList, elasticsearchShipper)
 	}
@@ -112,10 +112,10 @@ func getShippers(conf ini.File) []shippers.ShipperInterface {
 		shipperList = append(shipperList, stdoutShipper)
 	}
 
-	enabled, _ = conf.Get("RedisShipper", "enabled")
+	enabled, _ = conf.Get("LogstashRedisShipper", "enabled")
 	if enabled == "true" {
-		logrus.Debug("enabling RedisShipper")
-		redisShipper := &shippers.RedisShipper{}
+		logrus.Debug("enabling LogstashRedisShipper")
+		redisShipper := &shippers.LogstashRedisShipper{}
 		redisShipper.Setup(conf)
 		shipperList = append(shipperList, redisShipper)
 	}

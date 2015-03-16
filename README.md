@@ -1,4 +1,5 @@
 # metricsd
+
 a metrics collecting agent written in go
 
 # installation
@@ -30,13 +31,13 @@ Collectors and Shippers are configured in an `ini` file. You *must* specify `ena
 Below is a sample `config.ini` that enables every collector and shipper:
 
 ```
-[ElasticsearchShipper]
+[LogstashElasticsearchShipper]
 enabled = true
 index = metricsd-data
 type = metricsd
 url = http://127.0.0.1:9200
 
-[RedisShipper]
+[LogstashRedisShipper]
 enabled = true
 url = redis://127.0.0.1:6379/0
 list = metricsd
