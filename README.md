@@ -1,23 +1,33 @@
-# go-metricsd
+# metricsd
 a metrics collecting agent written in go
 
 # installation
 
-You need the following go packages
+You can setup metricsd via the following short script:
 
-- github.com/Sirupsen/logrus
-- github.com/fzzy/radix
-- github.com/c9s/goprocinfo
-- github.com/vaughan0/go-ini
-- github.com/josegonzalez/go-radixurl
+```shell
+go get github.com/c9s/goprocinfo
+go get github.com/fzzy/radix
+go get github.com/josegonzalez/go-radixurl
+go get github.com/ogier/pflag
+go get github.com/Sirupsen/logrus
+go get github.com/vaughan0/go-ini
 
-and then run `go run *.go -config=path/to/config.ini` in this directory
+go get github.com/josegonzalez/metricsd
+go build github.com/josegonzalez/metricsd
+```
+
+Then you can execute the script using an ini-file of your choice:
+
+```shell
+./metricsd --config="path/to/config.ini"
+```
 
 # configuration
 
 Collectors and Shippers are configured in an `ini` file. You *must* specify `enabled = true` under the stanza for that collector/shipper in order to enable it. Other configuration for the respective collector/shipper can also be place in those sections.
 
-Below is a sample `config.ini`:
+Below is a sample `config.ini` that enables every collector and shipper:
 
 ```
 [ElasticsearchShipper]
