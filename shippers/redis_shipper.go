@@ -1,8 +1,9 @@
-package main
+package shippers
 
+import "github.com/josegonzalez/go-radixurl"
+import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
-import "github.com/josegonzalez/go-radixurl"
 
 type RedisShipper struct{}
 
@@ -23,7 +24,7 @@ func (shipper *RedisShipper) Setup(conf ini.File) {
 	}
 }
 
-func (shipper *RedisShipper) Ship(logs MetricMapSlice) error {
+func (shipper *RedisShipper) Ship(logs mappings.MetricMapSlice) error {
 	c, err := radixurl.ConnectToURL(redisUrl)
 	errHndlr(err)
 	defer c.Close()

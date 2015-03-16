@@ -1,18 +1,19 @@
-package main
+package collectors
 
-import "github.com/Sirupsen/logrus"
 import "github.com/c9s/goprocinfo/linux"
+import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/Sirupsen/logrus"
 
 type VmstatCollector struct{}
 
-func (c *VmstatCollector) Collect() (IntMetricMap, error) {
+func (c *VmstatCollector) Collect() (mappings.MetricMap, error) {
 	stat, err := linux.ReadVMStat("/proc/vmstat")
 	if err != nil {
 		logrus.Fatal("stat read fail")
 		return nil, err
 	}
 
-	return IntMetricMap{
+	return mappings.MetricMap{
 		"paging_in": stat.PagePagein,
 		"pagingout": stat.PagePageout,
 		"swap_in":   stat.PageSwapin,
@@ -20,13 +21,13 @@ func (c *VmstatCollector) Collect() (IntMetricMap, error) {
 	}, nil
 }
 
-func (c *VmstatCollector) Report() (MetricMapSlice, error) {
-	var report MetricMapSlice
+func (c *VmstatCollector) Report() (mappings.MetricMapSlice, error) {
+	var report mappings.MetricMapSlice
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			report = append(report, MetricMap{
+			report = append(report, mappings.MetricMap{
 				"target_type": "rate",
 				"type":        k,
 				"unit":        "Page",

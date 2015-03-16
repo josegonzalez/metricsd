@@ -1,4 +1,4 @@
-package main
+package utils
 
 func Extend(slice []byte, sliceTwo []byte) []byte {
 	for i := range sliceTwo {

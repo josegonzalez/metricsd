@@ -1,9 +1,10 @@
-package main
+package collectors
 
 import "strings"
 import "syscall"
-import "github.com/Sirupsen/logrus"
 import "github.com/c9s/goprocinfo/linux"
+import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/Sirupsen/logrus"
 
 type DiskspaceCollector struct{}
 
@@ -22,7 +23,7 @@ var filesystems = map[string]bool{
 	"btrfs":     true,
 }
 
-func (c *DiskspaceCollector) Collect() (map[string]IntMetricMap, error) {
+func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadMounts("/proc/mounts")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -30,7 +31,7 @@ func (c *DiskspaceCollector) Collect() (map[string]IntMetricMap, error) {
 	}
 
 	var statfs_t syscall.Statfs_t
-	diskspaceMapping := map[string]IntMetricMap{}
+	diskspaceMapping := map[string]mappings.MetricMap{}
 
 	for _, mount := range stat.Mounts {
 		if !filesystems[mount.FSType] {
@@ -41,7 +42,7 @@ func (c *DiskspaceCollector) Collect() (map[string]IntMetricMap, error) {
 		byte_avail := statfs_t.Bavail * uint64(statfs_t.Bsize)
 		byte_free := statfs_t.Bfree * uint64(statfs_t.Bsize)
 
-		diskspaceMapping[mount.Device] = IntMetricMap{
+		diskspaceMapping[mount.Device] = mappings.MetricMap{
 			"byte_avail": byte_avail,
 			"byte_free":  byte_free,
 			"byte_used":  byte_avail - byte_free,
@@ -57,8 +58,8 @@ func (c *DiskspaceCollector) Collect() (map[string]IntMetricMap, error) {
 	return diskspaceMapping, nil
 }
 
-func (c *DiskspaceCollector) Report() (MetricMapSlice, error) {
-	var report MetricMapSlice
+func (c *DiskspaceCollector) Report() (mappings.MetricMapSlice, error) {
+	var report mappings.MetricMapSlice
 	data, _ := c.Collect()
 
 	if data != nil {
@@ -77,7 +78,7 @@ func (c *DiskspaceCollector) Report() (MetricMapSlice, error) {
 			for k, v := range values {
 				s := strings.Split(k, "_")
 				unit, mtype := s[0], s[1]
-				report = append(report, MetricMap{
+				report = append(report, mappings.MetricMap{
 					"mountpoint":  mountpoint,
 					"target_type": "gauge",
 					"type":        mtype,

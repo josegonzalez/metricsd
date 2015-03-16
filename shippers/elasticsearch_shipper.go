@@ -1,10 +1,12 @@
-package main
+package shippers
 
 import "bytes"
 import "encoding/json"
 import "fmt"
 import "net/http"
 import "github.com/Sirupsen/logrus"
+import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/utils"
 import "github.com/vaughan0/go-ini"
 
 type ElasticsearchShipper struct{}
@@ -35,9 +37,9 @@ func (shipper *ElasticsearchShipper) Setup(conf ini.File) {
 	SetupTemplate()
 }
 
-func (shipper *ElasticsearchShipper) Ship(logs MetricMapSlice) error {
-	action := ActionMap{
-		"index": IndexMap{
+func (shipper *ElasticsearchShipper) Ship(logs mappings.MetricMapSlice) error {
+	action := mappings.ActionMap{
+		"index": mappings.IndexMap{
 			"_index": index,
 			"_type":  metricType,
 		},
@@ -53,10 +55,10 @@ func (shipper *ElasticsearchShipper) Ship(logs MetricMapSlice) error {
 
 	for _, item := range logs {
 		serialized := MarshalData(item)
-		slice = Extend(slice, serializedAction)
-		slice = Extend(slice, newline)
-		slice = Extend(slice, serialized)
-		slice = Extend(slice, newline)
+		slice = utils.Extend(slice, serializedAction)
+		slice = utils.Extend(slice, newline)
+		slice = utils.Extend(slice, serialized)
+		slice = utils.Extend(slice, newline)
 	}
 
 	status, err := ElasticsearchPost("/_bulk", slice)

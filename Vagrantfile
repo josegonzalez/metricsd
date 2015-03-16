@@ -39,7 +39,6 @@ if [ ! -f /usr/bin/redis-server ]; then
   apt-get install -y --force-yes -qq redis-server
 fi
 
-
 echo "- ensuring environment file is up to date"
 ENV_FILE="/etc/environment"
 ENV_TEMP=`cat "${ENV_FILE}"`
@@ -55,7 +54,7 @@ echo "$ENV_TEMP" | sed '/^$/d' | sort > $ENV_FILE
 
 if ! grep -q cd-to-directory "/home/vagrant/.bashrc"; then
   echo "- setting up auto chdir on ssh"
-  echo "\n[ -n \\"\\$SSH_CONNECTION\\" ] && cd /vagrant # cd-to-directory" >> "/home/vagrant/.bashrc"
+  echo "\n[ -n \\"\\$SSH_CONNECTION\\" ] && cd /opt/gopkg/src/github.com/josegonzalez/metricsd # cd-to-directory" >> "/home/vagrant/.bashrc"
 fi
 
 echo -e "\n- ALL CLEAR! SSH access via 'vagrant ssh'."
@@ -68,4 +67,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "chef/ubuntu-14.04"
   config.vm.provision :shell, inline: $script
   config.vm.network "private_network", type: "dhcp"
+  config.vm.synced_folder ".", "/opt/gopkg/src/github.com/josegonzalez/metricsd"
 end
