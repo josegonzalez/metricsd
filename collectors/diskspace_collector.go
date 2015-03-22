@@ -79,6 +79,7 @@ func (c *DiskspaceCollector) Report() (mappings.MetricMapSlice, error) {
 				s := strings.Split(k, "_")
 				unit, mtype := s[0], s[1]
 				report = append(report, mappings.MetricMap{
+					"_from":       "diskspace",
 					"mountpoint":  mountpoint,
 					"target_type": "gauge",
 					"type":        mtype,

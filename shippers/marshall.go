@@ -7,6 +7,7 @@ import "time"
 import "github.com/josegonzalez/metricsd/mappings"
 
 func MarshallForLogstash(data mappings.MetricMap) []byte {
+	delete(data, "_from")
 	data["@version"] = "1"
 	data["@timestamp"] = time.Now().Format("2006-01-02T15:04:05.000Z")
 

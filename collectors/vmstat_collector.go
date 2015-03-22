@@ -28,6 +28,7 @@ func (c *VmstatCollector) Report() (mappings.MetricMapSlice, error) {
 	if values != nil {
 		for k, v := range values {
 			report = append(report, mappings.MetricMap{
+				"_from":       "vmstat",
 				"target_type": "rate",
 				"type":        k,
 				"unit":        "Page",

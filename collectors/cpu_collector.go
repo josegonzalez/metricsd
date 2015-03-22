@@ -41,6 +41,7 @@ func (c *CpuCollector) Report() (mappings.MetricMapSlice, error) {
 		for cpu, values := range data {
 			for k, v := range values {
 				report = append(report, mappings.MetricMap{
+					"_from":       "cpu",
 					"target_type": "gauge_pct",
 					"core":        cpu,
 					"type":        k,

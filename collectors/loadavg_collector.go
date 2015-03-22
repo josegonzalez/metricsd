@@ -29,6 +29,7 @@ func (c *LoadAvgCollector) Report() (mappings.MetricMapSlice, error) {
 	if values != nil {
 		for k, v := range values {
 			report = append(report, mappings.MetricMap{
+				"_from":       "loadavg",
 				"target_type": "gauge",
 				"type":        k,
 				"unit":        "Load",
