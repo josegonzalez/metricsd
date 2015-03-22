@@ -11,12 +11,13 @@ func MarshallForLogstash(data mappings.MetricMap) []byte {
 	data["@version"] = "1"
 	data["@timestamp"] = time.Now().Format("2006-01-02T15:04:05.000Z")
 
-	hostname, err := os.Hostname()
-	if err != nil {
-		hostname = "localhost"
+	if _, ok := data["host"]; !ok {
+		hostname, err := os.Hostname()
+		if err != nil {
+			hostname = "localhost"
+		}
+	    data["host"] = hostname
 	}
-
-	data["host"] = hostname
 
 	serialized, err := json.Marshal(data)
 	if err != nil {
