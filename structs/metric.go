@@ -7,6 +7,7 @@ import "time"
 import "github.com/Sirupsen/logrus"
 
 type Metric struct {
+	Path       string
 	From       string
 	Name       string
 	Value      interface{}
@@ -83,4 +84,13 @@ func (m *Metric) ToJson() []byte {
 		return nil
 	}
 	return serialized
+}
+
+func (m *Metric) ToGraphite() (response string) {
+	path := m.From
+	if m.Path != "" {
+		path = m.Path
+	}
+	key := fmt.Sprintf("%s.%s.%s", m.Host, path, m.Name)
+	return fmt.Sprintf("%s %v %d", key, m.Value, int32(m.Timestamp.Unix()))
 }

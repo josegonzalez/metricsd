@@ -96,6 +96,14 @@ func getShippers(conf ini.File) []shippers.ShipperInterface {
 	var shipperList []shippers.ShipperInterface
 	var enabled string
 
+	enabled, _ = conf.Get("GraphiteShipper", "enabled")
+	if enabled == "true" {
+		logrus.Debug("enabling GraphiteShipper")
+		graphiteShipper := &shippers.GraphiteShipper{}
+		graphiteShipper.Setup(conf)
+		shipperList = append(shipperList, graphiteShipper)
+	}
+
 	enabled, _ = conf.Get("LogstashElasticsearchShipper", "enabled")
 	if enabled == "true" {
 		logrus.Debug("enabling LogstashElasticsearchShipper")

@@ -1,5 +1,6 @@
 package collectors
 
+import "fmt"
 import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/josegonzalez/metricsd/structs"
@@ -45,6 +46,7 @@ func (c *CpuCollector) Report() (structs.MetricSlice, error) {
 					"core":        cpu,
 					"unit":        "Jiff",
 				})
+				metric.Path = fmt.Sprintf("cpu.%s", cpu)
 				report = append(report, metric)
 			}
 		}

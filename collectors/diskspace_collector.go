@@ -1,5 +1,6 @@
 package collectors
 
+import "fmt"
 import "strings"
 import "syscall"
 import "github.com/c9s/goprocinfo/linux"
@@ -70,11 +71,7 @@ func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 		}
 
 		for device, values := range data {
-			mountpoint := strings.Replace(device, "/", "_", -1)
-			mountpoint = strings.Replace(mountpoint, ".", "_", -1)
-			if mountpoint == "_" {
-				mountpoint = "root"
-			}
+			mountpoint := parseMountpoint(device)
 
 			for k, v := range values {
 				s := strings.Split(k, "_")
@@ -84,10 +81,24 @@ func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 					"mountpoint":  mountpoint,
 					"unit":        units[unit],
 				})
+				metric.Path = fmt.Sprintf("diskspace.%s", mountpoint)
 				report = append(report, metric)
 			}
 		}
 	}
 
 	return report, nil
+}
+
+func parseMountpoint(device string) string {
+	mountpoint := strings.Replace(device, "/", "_", -1)
+	mountpoint = strings.Replace(mountpoint, ".", "_", -1)
+	if mountpoint == "_" {
+		mountpoint = "root"
+	}
+
+	if mountpoint == "_dev_mapper_vagrant--vg-root" {
+		mountpoint = "root"
+	}
+	return mountpoint
 }
