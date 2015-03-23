@@ -136,7 +136,6 @@ func getCollectors(conf ini.File) []collectors.CollectorInterface {
 	var enabled string
 
 	// iostat: (diskstat.go + mangling) /proc/diskstats
-	// sockets: (sockstat.go in a pr) /proc/net/sockstat
 
 	enabled, _ = conf.Get("CpuCollector", "enabled")
 	if enabled == "true" {
@@ -160,6 +159,12 @@ func getCollectors(conf ini.File) []collectors.CollectorInterface {
 	if enabled == "true" {
 		logrus.Debug("enabling MemoryCollector")
 		collectorList = append(collectorList, &collectors.MemoryCollector{})
+	}
+
+	enabled, _ = conf.Get("SocketsCollector", "enabled")
+	if enabled == "true" {
+		logrus.Debug("enabling SocketsCollector")
+		collectorList = append(collectorList, &collectors.SocketsCollector{})
 	}
 
 	enabled, _ = conf.Get("VmstatCollector", "enabled")

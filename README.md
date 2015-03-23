@@ -63,6 +63,9 @@ enabled = true
 [MemoryCollector]
 enabled = true
 
+[SocketsCollector]
+enabled = true
+
 [VmstatCollector]
 enabled = true
 ```
