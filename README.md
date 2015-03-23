@@ -31,6 +31,12 @@ Collectors and Shippers are configured in an `ini` file. You *must* specify `ena
 Below is a sample `config.ini` that enables every collector and shipper:
 
 ```
+[GraphiteShipper]
+debug = true
+enabled = true
+url = tcp://127.0.0.1:2003
+prefix = servers
+
 [LogstashElasticsearchShipper]
 enabled = true
 index = metricsd-data
