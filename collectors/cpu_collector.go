@@ -2,6 +2,7 @@ package collectors
 
 import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 
 type CpuCollector struct{}
@@ -33,21 +34,18 @@ func (c *CpuCollector) Collect() (map[string]mappings.MetricMap, error) {
 	return cpuMapping, nil
 }
 
-func (c *CpuCollector) Report() (mappings.MetricMapSlice, error) {
-	var report mappings.MetricMapSlice
+func (c *CpuCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
 	data, _ := c.Collect()
 
 	if data != nil {
 		for cpu, values := range data {
 			for k, v := range values {
-				report = append(report, mappings.MetricMap{
-					"_from":       "cpu",
-					"target_type": "gauge_pct",
+				metric := structs.BuildMetric("cpu", "gauge_pct", k, v, structs.FieldsMap{
 					"core":        cpu,
-					"type":        k,
 					"unit":        "Jiff",
-					"result":      v,
 				})
+				report = append(report, metric)
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import "strings"
 import "syscall"
 import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 
 type DiskspaceCollector struct{}
@@ -58,8 +59,8 @@ func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
 	return diskspaceMapping, nil
 }
 
-func (c *DiskspaceCollector) Report() (mappings.MetricMapSlice, error) {
-	var report mappings.MetricMapSlice
+func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
 	data, _ := c.Collect()
 
 	if data != nil {
@@ -78,14 +79,12 @@ func (c *DiskspaceCollector) Report() (mappings.MetricMapSlice, error) {
 			for k, v := range values {
 				s := strings.Split(k, "_")
 				unit, mtype := s[0], s[1]
-				report = append(report, mappings.MetricMap{
-					"_from":       "diskspace",
+
+				metric := structs.BuildMetric("diskspace", "gauge", mtype, v, structs.FieldsMap{
 					"mountpoint":  mountpoint,
-					"target_type": "gauge",
-					"type":        mtype,
 					"unit":        units[unit],
-					"result":      v,
 				})
+				report = append(report, metric)
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package collectors
 
 import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 
 type MemoryCollector struct{}
@@ -32,20 +33,17 @@ func (c *MemoryCollector) Collect() (mappings.MetricMap, error) {
 	}, nil
 }
 
-func (c *MemoryCollector) Report() (mappings.MetricMapSlice, error) {
-	var report mappings.MetricMapSlice
+func (c *MemoryCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			report = append(report, mappings.MetricMap{
-				"_from":       "memory",
-				"target_type": "gauge",
-				"type":        k,
+			metric := structs.BuildMetric("memory", "gauge", k, v, structs.FieldsMap{
 				"unit":        "B",
 				"where":       "system_memory",
-				"result":      v,
 			})
+			report = append(report, metric)
 		}
 	}
 

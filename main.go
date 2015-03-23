@@ -4,8 +4,8 @@ import "fmt"
 import "sync"
 import "github.com/josegonzalez/metricsd/collectors"
 import "github.com/josegonzalez/metricsd/config"
-import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/josegonzalez/metricsd/shippers"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
@@ -15,7 +15,7 @@ func main() {
 	shippers := getShippers(conf)
 	collectorList := getCollectors(conf)
 
-	var c chan mappings.MetricMap = make(chan mappings.MetricMap)
+	var c chan *structs.Metric = make(chan *structs.Metric)
 	var collector_wg sync.WaitGroup
 	var reporter_wg sync.WaitGroup
 	collector_wg.Add(len(collectorList))
@@ -56,7 +56,7 @@ func initializeLogging(conf ini.File) {
 	}
 }
 
-func collect(c chan mappings.MetricMap, collector collectors.CollectorInterface) {
+func collect(c chan *structs.Metric, collector collectors.CollectorInterface) {
 	data, err := collector.Report()
 	if err != nil {
 		close(c)
@@ -68,8 +68,8 @@ func collect(c chan mappings.MetricMap, collector collectors.CollectorInterface)
 	}
 }
 
-func report(c chan mappings.MetricMap, shippers []shippers.ShipperInterface) {
-	var list mappings.MetricMapSlice
+func report(c chan *structs.Metric, shippers []shippers.ShipperInterface) {
+	var list structs.MetricSlice
 
 	for item := range c {
 		list = append(list, item)

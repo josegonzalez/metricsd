@@ -5,11 +5,14 @@ import "encoding/json"
 import "fmt"
 import "net/http"
 import "github.com/Sirupsen/logrus"
-import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/josegonzalez/metricsd/utils"
 import "github.com/vaughan0/go-ini"
 
+type actionMap map[string]indexMap
+type indexMap map[string]string
 type LogstashElasticsearchShipper struct{}
+
 
 var elasticsearchUrl string
 var index string
@@ -37,9 +40,9 @@ func (shipper *LogstashElasticsearchShipper) Setup(conf ini.File) {
 	SetupTemplate()
 }
 
-func (shipper *LogstashElasticsearchShipper) Ship(logs mappings.MetricMapSlice) error {
-	action := mappings.ActionMap{
-		"index": mappings.IndexMap{
+func (shipper *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
+	action := actionMap{
+		"index": indexMap{
 			"_index": index,
 			"_type":  metricType,
 		},
@@ -54,7 +57,7 @@ func (shipper *LogstashElasticsearchShipper) Ship(logs mappings.MetricMapSlice) 
 	newline := []byte("\n")
 
 	for _, item := range logs {
-		serialized := MarshallForLogstash(item)
+		serialized := item.ToJson()
 		slice = utils.Extend(slice, serializedAction)
 		slice = utils.Extend(slice, newline)
 		slice = utils.Extend(slice, serialized)

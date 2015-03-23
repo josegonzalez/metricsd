@@ -1,7 +1,7 @@
 package collectors
 
-import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 
 type CollectorInterface interface {
-	Report() (mappings.MetricMapSlice, error)
+	Report() (structs.MetricSlice, error)
 }

@@ -1,7 +1,7 @@
 package shippers
 
 import "fmt"
-import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/vaughan0/go-ini"
 
 type StdoutShipper struct{}
@@ -9,9 +9,9 @@ type StdoutShipper struct{}
 func (shipper *StdoutShipper) Setup(_ ini.File) {
 }
 
-func (shipper *StdoutShipper) Ship(logs mappings.MetricMapSlice) error {
+func (shipper *StdoutShipper) Ship(logs structs.MetricSlice) error {
 	for _, item := range logs {
-		serialized := MarshallForLogstash(item)
+		serialized := item.ToJson()
 		fmt.Printf("%s\n", string(serialized))
 	}
 

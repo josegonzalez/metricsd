@@ -1,7 +1,7 @@
 package shippers
 
 import "github.com/josegonzalez/go-radixurl"
-import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
@@ -24,7 +24,7 @@ func (shipper *LogstashRedisShipper) Setup(conf ini.File) {
 	}
 }
 
-func (shipper *LogstashRedisShipper) Ship(logs mappings.MetricMapSlice) error {
+func (shipper *LogstashRedisShipper) Ship(logs structs.MetricSlice) error {
 	c, err := radixurl.ConnectToURL(redisUrl)
 	errHndlr(err)
 	defer c.Close()
@@ -32,7 +32,7 @@ func (shipper *LogstashRedisShipper) Ship(logs mappings.MetricMapSlice) error {
 	var list []string
 
 	for _, item := range logs {
-		serialized := MarshallForLogstash(item)
+		serialized := item.ToJson()
 		list = append(list, string(serialized))
 	}
 

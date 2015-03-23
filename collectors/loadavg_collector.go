@@ -2,6 +2,7 @@ package collectors
 
 import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 
 type LoadAvgCollector struct{}
@@ -22,19 +23,16 @@ func (c *LoadAvgCollector) Collect() (mappings.MetricMap, error) {
 	}, nil
 }
 
-func (c *LoadAvgCollector) Report() (mappings.MetricMapSlice, error) {
-	var report mappings.MetricMapSlice
+func (c *LoadAvgCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			report = append(report, mappings.MetricMap{
-				"_from":       "loadavg",
-				"target_type": "gauge",
-				"type":        k,
+			metric := structs.BuildMetric("loadavg", "gauge", k, v, structs.FieldsMap{
 				"unit":        "Load",
-				"result":      v,
 			})
+			report = append(report, metric)
 		}
 	}
 

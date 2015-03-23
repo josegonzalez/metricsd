@@ -2,6 +2,7 @@ package collectors
 
 import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
+import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 
 type VmstatCollector struct{}
@@ -21,19 +22,16 @@ func (c *VmstatCollector) Collect() (mappings.MetricMap, error) {
 	}, nil
 }
 
-func (c *VmstatCollector) Report() (mappings.MetricMapSlice, error) {
-	var report mappings.MetricMapSlice
+func (c *VmstatCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
 	values, _ := c.Collect()
 
 	if values != nil {
 		for k, v := range values {
-			report = append(report, mappings.MetricMap{
-				"_from":       "vmstat",
-				"target_type": "rate",
-				"type":        k,
+			metric := structs.BuildMetric("vmstat", "rate", k, v, structs.FieldsMap{
 				"unit":        "Page",
-				"result":      v,
 			})
+			report = append(report, metric)
 		}
 	}
 
