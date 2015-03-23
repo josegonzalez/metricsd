@@ -30,7 +30,7 @@ func (c *LoadAvgCollector) Report() (structs.MetricSlice, error) {
 	if values != nil {
 		for k, v := range values {
 			metric := structs.BuildMetric("loadavg", "gauge", k, v, structs.FieldsMap{
-				"unit":        "Load",
+				"unit": "Load",
 			})
 			report = append(report, metric)
 		}

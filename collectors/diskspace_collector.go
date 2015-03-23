@@ -78,8 +78,8 @@ func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 				unit, mtype := s[0], s[1]
 
 				metric := structs.BuildMetric("diskspace", "gauge", mtype, v, structs.FieldsMap{
-					"mountpoint":  mountpoint,
-					"unit":        units[unit],
+					"mountpoint": mountpoint,
+					"unit":       units[unit],
 				})
 				metric.Path = fmt.Sprintf("diskspace.%s", mountpoint)
 				report = append(report, metric)

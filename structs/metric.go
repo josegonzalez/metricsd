@@ -62,7 +62,7 @@ func (m *Metric) ToMap() map[string]interface{} {
 	for k, v := range m.Data {
 		_, exists := data[k]
 		if exists {
-		    data[fmt.Sprintf("fields.%s", k)] = v
+			data[fmt.Sprintf("fields.%s", k)] = v
 		} else {
 			data[k] = v
 		}

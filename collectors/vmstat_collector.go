@@ -29,7 +29,7 @@ func (c *VmstatCollector) Report() (structs.MetricSlice, error) {
 	if values != nil {
 		for k, v := range values {
 			metric := structs.BuildMetric("vmstat", "rate", k, v, structs.FieldsMap{
-				"unit":        "Page",
+				"unit": "Page",
 			})
 			report = append(report, metric)
 		}

@@ -43,8 +43,8 @@ func (c *CpuCollector) Report() (structs.MetricSlice, error) {
 		for cpu, values := range data {
 			for k, v := range values {
 				metric := structs.BuildMetric("cpu", "gauge_pct", k, v, structs.FieldsMap{
-					"core":        cpu,
-					"unit":        "Jiff",
+					"core": cpu,
+					"unit": "Jiff",
 				})
 				metric.Path = fmt.Sprintf("cpu.%s", cpu)
 				report = append(report, metric)

@@ -13,7 +13,6 @@ type actionMap map[string]indexMap
 type indexMap map[string]string
 type LogstashElasticsearchShipper struct{}
 
-
 var elasticsearchUrl string
 var index string
 var metricType string
