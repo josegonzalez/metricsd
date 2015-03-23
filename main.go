@@ -149,6 +149,12 @@ func getCollectors(conf ini.File) []collectors.CollectorInterface {
 		collectorList = append(collectorList, &collectors.DiskspaceCollector{})
 	}
 
+	enabled, _ = conf.Get("IostatCollector", "enabled")
+	if enabled == "true" {
+		logrus.Debug("enabling IostatCollector")
+		collectorList = append(collectorList, &collectors.IostatCollector{})
+	}
+
 	enabled, _ = conf.Get("LoadAvgCollector", "enabled")
 	if enabled == "true" {
 		logrus.Debug("enabling LoadAvgCollector")
