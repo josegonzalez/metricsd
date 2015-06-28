@@ -39,6 +39,37 @@ if [ ! -f /usr/bin/redis-server ]; then
   apt-get install -y --force-yes -qq redis-server > /dev/null
 fi
 
+if [ ! -f /usr/bin/carbon-cache ]; then
+  echo "- installing graphite"
+  apt-get update > /dev/null
+  apt-get install -y --force-yes -qq graphite-carbon graphite-web libpq-dev python-psycopg2 python-memcache > /dev/null
+  sed -i "/#SECRET_KEY = 'UNSAFE_DEFAULT'/c\SECRET_KEY = 'a_salty_string'" /etc/graphite/local_settings.py
+  sed -i "s/America\\/Los_Angeles/UTC/" /etc/graphite/local_settings.py
+  sed -i "s/#TIME_ZONE/TIME_ZONE/g" /etc/graphite/local_settings.py
+  sed -i "/#USE_REMOTE_USER_AUTHENTICATION = True/c\USE_REMOTE_USER_AUTHENTICATION = True" /etc/graphite/local_settings.py
+  sed -i "s/\\/var\\/lib\\/graphite\\/graphite.db/graphite/g" /etc/graphite/local_settings.py
+  sed -i "s/django.db.backends.sqlite3/django.db.backends.postgresql_psycopg2/g" /etc/graphite/local_settings.py
+  sed -i "s/USER': ''/USER': 'graphite'/g" /etc/graphite/local_settings.py
+  sed -i "s/PASSWORD': ''/PASSWORD': 'password'/g" /etc/graphite/local_settings.py
+  sed -i "s/HOST': ''/HOST': '127.0.0.1'/g" /etc/graphite/local_settings.py
+  sed -i "s/CARBON_CACHE_ENABLED=false/CARBON_CACHE_ENABLED=true/g" /etc/default/graphite-carbon
+  sed -i "s/ENABLE_LOGROTATION = False/ENABLE_LOGROTATION = True/g" /etc/carbon/carbon.conf
+  sudo service carbon-cache start > /dev/null
+
+  apt-get install -y --force-yes -qq postgresql libpq-dev python-psycopg2 > /dev/null
+  su - postgres -c "psql -c \\"CREATE USER graphite WITH PASSWORD 'password';\\"" > /dev/null
+  su - postgres -c "psql -c \\"CREATE DATABASE graphite WITH OWNER graphite;\\"" > /dev/null
+  graphite-manage syncdb --noinput > /dev/null
+  echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'mail@example.com', 'password')" | graphite-manage shell > /dev/null
+
+  echo "- installing apache2"
+  apt-get install -y --force-yes -qq apache2 libapache2-mod-wsgi > /dev/null
+  a2dissite 000-default > /dev/null
+  cp /usr/share/graphite-web/apache2-graphite.conf /etc/apache2/sites-available
+  a2ensite apache2-graphite > /dev/null
+  service apache2 reload > /dev/null
+fi
+
 if [ ! -L /opt/influxdb/influxd ]; then
   echo "- installing influxdb"
   cd /tmp
