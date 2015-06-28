@@ -20,6 +20,7 @@ clean-data:
 	sudo service elasticsearch stop
 	sudo rm -rf /var/lib/elasticsearch/elasticsearch/
 	sudo service elasticsearch start
+	sudo rm -rf /var/lib/graphite/whisper/servers /var/lib/graphite/whisper/vagrant
 
 .PHONY: config
 config:
