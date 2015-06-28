@@ -57,7 +57,8 @@ if ! grep -q cd-to-directory "/home/vagrant/.bashrc"; then
   echo "\n[ -n \\"\\$SSH_CONNECTION\\" ] && cd /opt/gopkg/src/github.com/josegonzalez/metricsd # cd-to-directory" >> "/home/vagrant/.bashrc"
 fi
 
-echo -e "\n- ALL CLEAR! SSH access via 'vagrant ssh'."
+echo -e "\n- ALL CLEAR! SSH access via 'vagrant ssh'"
+echo "- Virtual Machine IP:"
 ifconfig | grep "inet " | grep -v 127 | grep -v "addr:10.0" | cut -d':' -f2 | cut -d' ' -f1
 SCRIPT
 
