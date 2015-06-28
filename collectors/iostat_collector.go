@@ -25,7 +25,6 @@ func (c *IostatCollector) Collect() (map[string]mappings.MetricMap, error) {
 			continue
 		}
 
-		fmt.Printf("%s\n", stat[i].Name)
 		diskusageMapping[stat[i].Name] = mappings.MetricMap{
 			// "average_queue_length": TODO
 			// "average_request_size_byte": TODO
