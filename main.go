@@ -1,7 +1,9 @@
 package main
 
 import "fmt"
+import "strconv"
 import "sync"
+import "time"
 import "github.com/josegonzalez/metricsd/collectors"
 import "github.com/josegonzalez/metricsd/config"
 import "github.com/josegonzalez/metricsd/shippers"
@@ -14,7 +16,31 @@ func main() {
 	initializeLogging(conf)
 	shippers := getShippers(conf)
 	collectorList := getCollectors(conf)
+	interval := getInterval(conf)
+	loop, _ := conf.Get("metricsd", "loop")
 
+	runCollect(shippers, collectorList)
+	if loop == "true" {
+		for _ = range time.Tick(interval) {
+			runCollect(shippers, collectorList)
+		}
+	}
+}
+
+func getInterval(conf ini.File) time.Duration {
+	defaultInterval := 30
+	interval, ok := conf.Get("metricsd", "interval")
+
+	if ok {
+		interval, err := strconv.Atoi(interval)
+		if err == nil {
+			return time.Duration(interval) * time.Second
+		}
+	}
+	return time.Duration(defaultInterval) * time.Second
+}
+
+func runCollect(shippers []shippers.ShipperInterface, collectorList []collectors.CollectorInterface) {
 	var c chan *structs.Metric = make(chan *structs.Metric)
 	var collector_wg sync.WaitGroup
 	var reporter_wg sync.WaitGroup
