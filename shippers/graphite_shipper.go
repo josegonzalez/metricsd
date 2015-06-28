@@ -62,9 +62,9 @@ func (shipper *GraphiteShipper) Ship(logs structs.MetricSlice) error {
 	defer con.Close()
 
 	for _, item := range logs {
-		serialized := item.ToGraphite()
+		serialized := item.ToGraphite(prefix)
 		if debug {
-			fmt.Printf("%s%s\n", prefix, serialized)
+			fmt.Printf("%s\n", serialized)
 		}
 		fmt.Fprintln(con, serialized)
 	}

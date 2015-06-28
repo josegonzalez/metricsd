@@ -86,11 +86,14 @@ func (m *Metric) ToJson() []byte {
 	return serialized
 }
 
-func (m *Metric) ToGraphite() (response string) {
+func (m *Metric) ToGraphite(prefix string) (response string) {
 	path := m.From
 	if m.Path != "" {
 		path = m.Path
 	}
 	key := fmt.Sprintf("%s.%s.%s", m.Host, path, m.Name)
+	if prefix != "" {
+		key = fmt.Sprintf("%s%s", prefix, key)
+	}
 	return fmt.Sprintf("%s %v %d", key, m.Value, int32(m.Timestamp.Unix()))
 }
