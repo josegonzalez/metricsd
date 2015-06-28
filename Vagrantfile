@@ -4,14 +4,14 @@
 ssh_user = ENV.fetch('USER', nil)
 
 $script = <<-SCRIPT
-echo "- updating deb repository"
+export DEBIAN_FRONTEND=noninteractive
 
-cd /vagrant
-
-echo "- installing golang 1.4.2"
 if [ ! -d /opt/go ]; then
+  echo "- installing git"
   apt-get update > /dev/null
   apt-get install -y --force-yes -qq git > /dev/null
+
+  echo "- installing golang 1.4.2"
   cd /tmp
   wget -q https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
   tar -xf go1.4.2.linux-amd64.tar.gz
@@ -20,21 +20,35 @@ if [ ! -d /opt/go ]; then
   chown -R vagrant:vagrant /opt/go /opt/gopkg
 fi
 
-echo "- installing ELK"
-if [ ! -d /usr/share/elasticsearch ]; then
+if [ ! -f /usr/bin/add-apt-repository ]; then
+  echo "- setting up add-apt-repository"
   apt-get update > /dev/null
   apt-get install -y --force-yes -qq software-properties-common > /dev/null
   wget -qO - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add - > /dev/null
   sudo add-apt-repository "deb http://packages.elasticsearch.org/elasticsearch/1.4/debian stable main"
   sudo add-apt-repository "deb http://packages.elasticsearch.org/logstash/1.4/debian stable main"
+fi
 
+if [ ! -d /usr/share/elasticsearch ]; then
+  echo "- installing elasticsearch"
   apt-get update > /dev/null
-  apt-get install -y --force-yes -qq elasticsearch logstash openjdk-7-jre
-  update-rc.d elasticsearch defaults 95 10
-  /etc/init.d/elasticsearch start
+  apt-get install -y --force-yes -qq elasticsearch logstash openjdk-7-jre > /dev/null
+
+  echo "- starting elasticsearch"
+  update-rc.d elasticsearch defaults 95 10 > /dev/null
+  /etc/init.d/elasticsearch start > /dev/null
+fi
+
+if [ ! -d /var/lib/kibana ]; then
+  echo "- installing kibana"
+  cd /tmp
+  wget -q https://download.elasticsearch.org/kibana/kibana/kibana-4.0.1-linux-x64.tar.gz
+  tar -xf kibana-4.0.1-linux-x64.tar.gz
+  mv /tmp/kibana-4.0.1-linux-x64 /var/lib/kibana
 fi
 
 if [ ! -f /usr/bin/redis-server ]; then
+  echo "- installing redis"
   apt-get update > /dev/null
   apt-get install -y --force-yes -qq redis-server > /dev/null
 fi
