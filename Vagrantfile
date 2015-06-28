@@ -11,7 +11,7 @@ cd /vagrant
 echo "- installing golang 1.4.2"
 if [ ! -d /opt/go ]; then
   apt-get update > /dev/null
-  apt-get install -y --force-yes -qq git
+  apt-get install -y --force-yes -qq git > /dev/null
   cd /tmp
   wget -q https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
   tar -xf go1.4.2.linux-amd64.tar.gz
@@ -23,8 +23,8 @@ fi
 echo "- installing ELK"
 if [ ! -d /usr/share/elasticsearch ]; then
   apt-get update > /dev/null
-  apt-get install -y --force-yes -qq software-properties-common
-  wget -qO - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
+  apt-get install -y --force-yes -qq software-properties-common > /dev/null
+  wget -qO - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add - > /dev/null
   sudo add-apt-repository "deb http://packages.elasticsearch.org/elasticsearch/1.4/debian stable main"
   sudo add-apt-repository "deb http://packages.elasticsearch.org/logstash/1.4/debian stable main"
 
@@ -36,7 +36,7 @@ fi
 
 if [ ! -f /usr/bin/redis-server ]; then
   apt-get update > /dev/null
-  apt-get install -y --force-yes -qq redis-server
+  apt-get install -y --force-yes -qq redis-server > /dev/null
 fi
 
 echo "- ensuring environment file is up to date"
