@@ -39,6 +39,14 @@ if [ ! -f /usr/bin/redis-server ]; then
   apt-get install -y --force-yes -qq redis-server > /dev/null
 fi
 
+if [ ! -L /opt/influxdb/influxd ]; then
+  echo "- installing influxdb"
+  cd /tmp
+  wget -q http://influxdb.s3.amazonaws.com/influxdb_0.9.0_amd64.deb
+  sudo dpkg -i influxdb_0.9.0_amd64.deb > /dev/null
+  /etc/init.d/influxdb start > /dev/null
+fi
+
 echo "- ensuring environment file is up to date"
 ENV_FILE="/etc/environment"
 ENV_TEMP=`cat "${ENV_FILE}"`
