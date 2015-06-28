@@ -48,7 +48,7 @@ ENV_TEMP=$(echo -e "${ENV_TEMP}" | sed "/^PATH=/ d")
 ENV_TEMP=$(echo -e "${ENV_TEMP}" | sed "/^SSH_USER=/ d")
 ENV_TEMP="${ENV_TEMP}\nGOPATH='/opt/gopkg'"
 ENV_TEMP="${ENV_TEMP}\nGOROOT='/opt/go'"
-ENV_TEMP="${ENV_TEMP}\nPATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$GOROOT/bin:$GOPATH/bin""
+ENV_TEMP="${ENV_TEMP}\nPATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gopkg/bin:/opt/go/bin:/opt/influxdb:/opt/logstash/bin:/var/lib/kibana/bin'"
 ENV_TEMP="${ENV_TEMP}\nSSH_USER='#{ssh_user}'"
 echo "$ENV_TEMP" | sed '/^$/d' | sort > $ENV_FILE
 
