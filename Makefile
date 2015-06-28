@@ -36,3 +36,7 @@ build:
 run: config
 	./metricsd --config="/etc/metricsd/metricsd.ini" --loglevel=debug
 
+
+.PHONY: ip
+ip:
+	@ifconfig | grep "inet " | grep -v 127 | grep -v "addr:10.0" | cut -d':' -f2 | cut -d' ' -f1
