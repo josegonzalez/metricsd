@@ -4,8 +4,12 @@ import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
+import "github.com/vaughan0/go-ini"
 
 type MemoryCollector struct{}
+
+func (c *MemoryCollector) Setup(conf ini.File) {
+}
 
 func (c *MemoryCollector) Collect() (mappings.MetricMap, error) {
 	stat, err := linux.ReadMemInfo("/proc/meminfo")

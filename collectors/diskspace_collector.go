@@ -7,6 +7,7 @@ import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
+import "github.com/vaughan0/go-ini"
 
 type DiskspaceCollector struct{}
 
@@ -23,6 +24,9 @@ var filesystems = map[string]bool{
 	"fat32":     true,
 	"fat16":     true,
 	"btrfs":     true,
+}
+
+func (c *DiskspaceCollector) Setup(conf ini.File) {
 }
 
 func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {

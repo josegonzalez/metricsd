@@ -5,8 +5,12 @@ import "github.com/c9s/goprocinfo/linux"
 import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
+import "github.com/vaughan0/go-ini"
 
 type CpuCollector struct{}
+
+func (c *CpuCollector) Setup(conf ini.File) {
+}
 
 func (c *CpuCollector) Collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadStat("/proc/stat")
