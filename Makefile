@@ -36,6 +36,9 @@ build:
 run: config
 	go run main.go
 
+.PHONY: start
+start: build config
+	./metricsd --config="/etc/metricsd/metricsd.ini" --loglevel=debug
 
 .PHONY: ip
 ip:
