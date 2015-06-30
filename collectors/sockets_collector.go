@@ -34,7 +34,9 @@ func (c *SocketsCollector) Report() (structs.MetricSlice, error) {
 	if values != nil {
 		for k, v := range values {
 			fieldsMap := structs.FieldsMap{
-				"unit": "Sock",
+				"unit":      "Sock",
+				"raw_key":   k,
+				"raw_value": v,
 			}
 
 			splitted := strings.Split(k, "_")

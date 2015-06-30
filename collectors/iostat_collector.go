@@ -67,7 +67,9 @@ func (c *IostatCollector) Report() (structs.MetricSlice, error) {
 		for device, values := range data {
 			for k, v := range values {
 				metric := structs.BuildMetric("iostat", "gauge", k, v, structs.FieldsMap{
-					"device": device,
+					"device":    device,
+					"raw_key":   k,
+					"raw_value": v,
 				})
 				metric.Path = fmt.Sprintf("iostat.%s", device)
 				report = append(report, metric)

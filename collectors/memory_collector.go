@@ -40,8 +40,10 @@ func (c *MemoryCollector) Report() (structs.MetricSlice, error) {
 	if values != nil {
 		for k, v := range values {
 			metric := structs.BuildMetric("memory", "gauge", k, v, structs.FieldsMap{
-				"unit":  "B",
-				"where": "system_memory",
+				"unit":      "B",
+				"where":     "system_memory",
+				"raw_key":   k,
+				"raw_value": v,
 			})
 			report = append(report, metric)
 		}
