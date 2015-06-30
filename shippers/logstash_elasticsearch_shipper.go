@@ -77,11 +77,11 @@ func (shipper *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) erro
 
 	status, err := ElasticsearchPost("/_bulk", slice)
 	if err != nil {
-		logrus.Warning("Indexing serialized data failed with err: ", err)
+		logrus.Warning("indexing serialized data failed with err: ", err)
 	}
 
 	if status != http.StatusOK {
-		logrus.Warning("Indexing serialized data failed with status: ", status)
+		logrus.Warning("indexing serialized data failed with status: ", status)
 	}
 	return nil
 }
@@ -149,10 +149,10 @@ func SetupTemplate() {
 
 	status, err := ElasticsearchPost("/_template/metricsd", data)
 	if err != nil {
-		logrus.Fatal("Creating index failed: ", err)
+		logrus.Fatal("creating index failed: ", err)
 	}
 
 	if status != http.StatusOK {
-		logrus.Fatal("Creating index failed")
+		logrus.Fatal("creating index failed")
 	}
 }

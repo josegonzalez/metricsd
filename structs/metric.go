@@ -27,7 +27,7 @@ func init() {
 	Hostname, err = os.Hostname()
 
 	if err != nil {
-		logrus.Warning("Error retrieving hostname, using `localhost` for now")
+		logrus.Warning("error retrieving hostname, using `localhost` for now")
 		Hostname = "localhost"
 	}
 }

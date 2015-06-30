@@ -115,7 +115,7 @@ func report(c chan *structs.Metric, shippers []shippers.ShipperInterface) {
 		list = append(list, item)
 
 		if len(list) == 10 {
-			logrus.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
+			logrus.Debug(fmt.Sprintf("shipping %d messages", len(list)))
 			for _, shipper := range shippers {
 				if shipper.Enabled() {
 					shipper.Ship(list)
@@ -126,7 +126,7 @@ func report(c chan *structs.Metric, shippers []shippers.ShipperInterface) {
 	}
 
 	if len(list) > 0 {
-		logrus.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
+		logrus.Debug(fmt.Sprintf("shipping %d messages", len(list)))
 		for _, shipper := range shippers {
 			if shipper.Enabled() {
 				shipper.Ship(list)

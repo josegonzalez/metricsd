@@ -46,16 +46,16 @@ func (shipper *GraphiteShipper) Setup(conf ini.File) {
 			graphiteHost, graphitePort = splitted[0], "2003"
 			switch {
 			case len(splitted) > 2:
-				logrus.Warning("Error parsing graphite url")
-				logrus.Warning("Using default 127.0.0.1:2003 for graphite url")
+				logrus.Warning("error parsing graphite url")
+				logrus.Warning("using default 127.0.0.1:2003 for graphite url")
 			case len(splitted) > 1:
 				graphiteHost, graphitePort = splitted[0], splitted[1]
 			default:
 				graphiteHost, graphitePort = splitted[0], "2003"
 			}
 		} else {
-			logrus.Warning("Error parsing graphite url: %s", err)
-			logrus.Warning("Using default 127.0.0.1:2003 for graphite url")
+			logrus.Warning("error parsing graphite url: %s", err)
+			logrus.Warning("using default 127.0.0.1:2003 for graphite url")
 		}
 	}
 
@@ -68,7 +68,7 @@ func (shipper *GraphiteShipper) Setup(conf ini.File) {
 func (shipper *GraphiteShipper) Ship(logs structs.MetricSlice) error {
 	con, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", graphiteHost, graphitePort), 1*time.Second)
 	if err != nil {
-		logrus.Warning("Connecting to graphite failed with err: ", err)
+		logrus.Warning("connecting to graphite failed with err: ", err)
 		return err
 	}
 	defer con.Close()
