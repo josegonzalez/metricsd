@@ -112,6 +112,7 @@ fi
 
 echo -e "\n- ALL CLEAR! SSH access via 'vagrant ssh'"
 echo "- Virtual Machine IP:"
+cd /vagrant
 make ip
 SCRIPT
 
