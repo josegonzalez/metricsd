@@ -9,14 +9,26 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type GraphiteShipper struct{}
+type GraphiteShipper struct{
+	enabled bool
+}
 
 var debug bool
 var graphiteHost string
 var graphitePort string
 var prefix string
 
+func (shipper *GraphiteShipper) Enabled() (bool) {
+	return shipper.enabled
+}
+
+func (shipper *GraphiteShipper) State(state bool) {
+	shipper.enabled = state
+}
+
 func (shipper *GraphiteShipper) Setup(conf ini.File) {
+	shipper.State(true)
+
 	useDebug, ok := conf.Get("GraphiteShipper", "debug")
 	if ok && useDebug == "true" {
 		debug = true

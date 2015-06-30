@@ -6,9 +6,20 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type VmstatCollector struct{}
+type VmstatCollector struct{
+	enabled bool
+}
+
+func (c *VmstatCollector) Enabled() (bool) {
+	return c.enabled
+}
+
+func (c *VmstatCollector) State(state bool) {
+	c.enabled = state
+}
 
 func (c *VmstatCollector) Setup(conf ini.File) {
+	c.State(true)
 }
 
 func (c *VmstatCollector) Collect() (mappings.MetricMap, error) {

@@ -9,7 +9,9 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type DiskspaceCollector struct{}
+type DiskspaceCollector struct{
+	enabled bool
+}
 
 var filesystems = map[string]bool{
 	"ext2":      true,
@@ -26,7 +28,16 @@ var filesystems = map[string]bool{
 	"btrfs":     true,
 }
 
+func (c *DiskspaceCollector) Enabled() (bool) {
+	return c.enabled
+}
+
+func (c *DiskspaceCollector) State(state bool) {
+	c.enabled = state
+}
+
 func (c *DiskspaceCollector) Setup(conf ini.File) {
+	c.State(true)
 }
 
 func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {

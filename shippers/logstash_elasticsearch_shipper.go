@@ -11,13 +11,25 @@ import "github.com/vaughan0/go-ini"
 
 type actionMap map[string]indexMap
 type indexMap map[string]string
-type LogstashElasticsearchShipper struct{}
+type LogstashElasticsearchShipper struct{
+	enabled bool
+}
 
 var elasticsearchUrl string
 var index string
 var metricType string
 
+func (shipper *LogstashElasticsearchShipper) Enabled() (bool) {
+	return shipper.enabled
+}
+
+func (shipper *LogstashElasticsearchShipper) State(state bool) {
+	shipper.enabled = state
+}
+
 func (shipper *LogstashElasticsearchShipper) Setup(conf ini.File) {
+	shipper.State(true)
+
 	elasticsearchUrl = "http://127.0.0.1:9200"
 	useElasticsearchUrl, ok := conf.Get("LogstashElasticsearchShipper", "url")
 	if ok {

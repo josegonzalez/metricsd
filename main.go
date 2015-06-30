@@ -1,7 +1,9 @@
 package main
 
 import "fmt"
+import "reflect"
 import "strconv"
+import "strings"
 import "sync"
 import "time"
 import "github.com/josegonzalez/metricsd/collectors"
@@ -44,10 +46,22 @@ func runCollect(shippers []shippers.ShipperInterface, collectorList []collectors
 	var c chan *structs.Metric = make(chan *structs.Metric)
 	var collector_wg sync.WaitGroup
 	var reporter_wg sync.WaitGroup
-	collector_wg.Add(len(collectorList))
+	var active = 0
+
+	for _, collector := range collectorList {
+		if collector.Enabled() {
+			active += 1
+		}
+	}
+
+	collector_wg.Add(active)
 	reporter_wg.Add(1)
 
 	for _, collector := range collectorList {
+		if !collector.Enabled() {
+			continue
+		}
+
 		go func(collector collectors.CollectorInterface) {
 			defer collector_wg.Done()
 			collect(c, collector)
@@ -103,7 +117,9 @@ func report(c chan *structs.Metric, shippers []shippers.ShipperInterface) {
 		if len(list) == 10 {
 			logrus.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
 			for _, shipper := range shippers {
-				shipper.Ship(list)
+				if shipper.Enabled() {
+					shipper.Ship(list)
+				}
 			}
 			list = nil
 		}
@@ -112,7 +128,9 @@ func report(c chan *structs.Metric, shippers []shippers.ShipperInterface) {
 	if len(list) > 0 {
 		logrus.Debug(fmt.Sprintf("Shipping %d messages", len(list)))
 		for _, shipper := range shippers {
-			shipper.Ship(list)
+			if shipper.Enabled() {
+				shipper.Ship(list)
+			}
 		}
 		list = nil
 	}
@@ -122,36 +140,21 @@ func getShippers(conf ini.File) []shippers.ShipperInterface {
 	var shipperList []shippers.ShipperInterface
 	var enabled string
 
-	enabled, _ = conf.Get("GraphiteShipper", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling GraphiteShipper")
-		graphiteShipper := &shippers.GraphiteShipper{}
-		graphiteShipper.Setup(conf)
-		shipperList = append(shipperList, graphiteShipper)
-	}
+	shipperList = append(shipperList, &shippers.GraphiteShipper{})
+	shipperList = append(shipperList, &shippers.LogstashElasticsearchShipper{})
+	shipperList = append(shipperList, &shippers.StdoutShipper{})
+	shipperList = append(shipperList, &shippers.LogstashRedisShipper{})
 
-	enabled, _ = conf.Get("LogstashElasticsearchShipper", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling LogstashElasticsearchShipper")
-		elasticsearchShipper := &shippers.LogstashElasticsearchShipper{}
-		elasticsearchShipper.Setup(conf)
-		shipperList = append(shipperList, elasticsearchShipper)
-	}
-
-	enabled, _ = conf.Get("StdoutShipper", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling StdoutShipper")
-		stdoutShipper := &shippers.StdoutShipper{}
-		stdoutShipper.Setup(conf)
-		shipperList = append(shipperList, stdoutShipper)
-	}
-
-	enabled, _ = conf.Get("LogstashRedisShipper", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling LogstashRedisShipper")
-		redisShipper := &shippers.LogstashRedisShipper{}
-		redisShipper.Setup(conf)
-		shipperList = append(shipperList, redisShipper)
+	for _, shipper := range shipperList {
+		collectorName := strings.Split(reflect.TypeOf(shipper).String(), ".")[1]
+		enabled, _ = conf.Get(collectorName, "enabled")
+		if enabled == "true" {
+			logrus.Debug(fmt.Sprintf("enabling %s", collectorName))
+			shipper.Setup(conf)
+			shipper.State(true)
+		} else {
+			shipper.State(false)
+		}
 	}
 
 	return shipperList
@@ -162,47 +165,24 @@ func getCollectors(conf ini.File) []collectors.CollectorInterface {
 	var enabled string
 
 	// iostat: (diskstat.go + mangling) /proc/diskstats
+	collectorList = append(collectorList, &collectors.CpuCollector{})
+	collectorList = append(collectorList, &collectors.DiskspaceCollector{})
+	collectorList = append(collectorList, &collectors.IostatCollector{})
+	collectorList = append(collectorList, &collectors.LoadAvgCollector{})
+	collectorList = append(collectorList, &collectors.MemoryCollector{})
+	collectorList = append(collectorList, &collectors.SocketsCollector{})
+	collectorList = append(collectorList, &collectors.VmstatCollector{})
 
-	enabled, _ = conf.Get("CpuCollector", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling CpuCollector")
-		collectorList = append(collectorList, &collectors.CpuCollector{})
-	}
-
-	enabled, _ = conf.Get("DiskspaceCollector", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling DiskspaceCollector")
-		collectorList = append(collectorList, &collectors.DiskspaceCollector{})
-	}
-
-	enabled, _ = conf.Get("IostatCollector", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling IostatCollector")
-		collectorList = append(collectorList, &collectors.IostatCollector{})
-	}
-
-	enabled, _ = conf.Get("LoadAvgCollector", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling LoadAvgCollector")
-		collectorList = append(collectorList, &collectors.LoadAvgCollector{})
-	}
-
-	enabled, _ = conf.Get("MemoryCollector", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling MemoryCollector")
-		collectorList = append(collectorList, &collectors.MemoryCollector{})
-	}
-
-	enabled, _ = conf.Get("SocketsCollector", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling SocketsCollector")
-		collectorList = append(collectorList, &collectors.SocketsCollector{})
-	}
-
-	enabled, _ = conf.Get("VmstatCollector", "enabled")
-	if enabled == "true" {
-		logrus.Debug("enabling VmstatCollector")
-		collectorList = append(collectorList, &collectors.VmstatCollector{})
+	for _, collector := range collectorList {
+		collectorName := strings.Split(reflect.TypeOf(collector).String(), ".")[1]
+		enabled, _ = conf.Get(collectorName, "enabled")
+		if enabled == "true" {
+			logrus.Debug(fmt.Sprintf("enabling %s", collectorName))
+			collector.Setup(conf)
+			collector.State(true)
+		} else {
+			collector.State(false)
+		}
 	}
 
 	return collectorList

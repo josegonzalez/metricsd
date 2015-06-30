@@ -7,9 +7,20 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type CpuCollector struct{}
+type CpuCollector struct{
+	enabled bool
+}
+
+func (c *CpuCollector) Enabled() (bool) {
+	return c.enabled
+}
+
+func (c *CpuCollector) State(state bool) {
+	c.enabled = state
+}
 
 func (c *CpuCollector) Setup(conf ini.File) {
+	c.State(true)
 }
 
 func (c *CpuCollector) Collect() (map[string]mappings.MetricMap, error) {

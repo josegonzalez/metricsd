@@ -5,12 +5,24 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type LogstashRedisShipper struct{}
+type LogstashRedisShipper struct{
+	enabled bool
+}
 
 var redisList string
 var redisUrl string
 
+func (shipper *LogstashRedisShipper) Enabled() (bool) {
+	return shipper.enabled
+}
+
+func (shipper *LogstashRedisShipper) State(state bool) {
+	shipper.enabled = state
+}
+
 func (shipper *LogstashRedisShipper) Setup(conf ini.File) {
+	shipper.State(true)
+
 	redisList = "metricsd"
 	useRedisList, ok := conf.Get("LogstashRedisShipper", "list")
 	if ok {
