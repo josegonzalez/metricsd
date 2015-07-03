@@ -11,14 +11,14 @@ import "github.com/vaughan0/go-ini"
 
 type actionMap map[string]indexMap
 type indexMap map[string]string
-type LogstashElasticsearchShipper struct{
+type LogstashElasticsearchShipper struct {
 	enabled    bool
 	index      string
 	metricType string
 	url        string
 }
 
-func (this *LogstashElasticsearchShipper) Enabled() (bool) {
+func (this *LogstashElasticsearchShipper) Enabled() bool {
 	return this.enabled
 }
 

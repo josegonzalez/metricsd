@@ -4,11 +4,11 @@ import "fmt"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/vaughan0/go-ini"
 
-type StdoutShipper struct{
+type StdoutShipper struct {
 	enabled bool
 }
 
-func (this *StdoutShipper) Enabled() (bool) {
+func (this *StdoutShipper) Enabled() bool {
 	return this.enabled
 }
 

@@ -112,22 +112,22 @@ func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 		"expired": values["expired_keys"],
 	}
 	redisMapping["keyspace"] = mappings.MetricMap{
-		"hits": values["keyspace_hits"],
+		"hits":   values["keyspace_hits"],
 		"misses": values["keyspace_misses"],
 	}
 	redisMapping["last_save"] = mappings.MetricMap{
 		"changes_since": values["changes_since_last_save"],
-		"time": values["last_save_time"],
+		"time":          values["last_save_time"],
 	}
 	redisMapping["memory"] = mappings.MetricMap{
-		"internal_view": values["used_memory"],
-		"external_view": values["used_memory_rss"],
+		"internal_view":       values["used_memory"],
+		"external_view":       values["used_memory_rss"],
 		"fragmentation_ratio": values["mem_fragmentation_ratio"],
 	}
 	redisMapping["process"] = mappings.MetricMap{
-		"commands_processed": values["total_commands_processed"],
+		"commands_processed":   values["total_commands_processed"],
 		"connections_received": values["total_connections_received"],
-		"uptime": values["uptime_in_seconds"],
+		"uptime":               values["uptime_in_seconds"],
 	}
 	redisMapping["pubsub"] = mappings.MetricMap{
 		"channels": values["pubsub_channels"],
@@ -135,7 +135,7 @@ func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 	}
 	redisMapping["slaves"] = mappings.MetricMap{
 		"connected": values["connected_slaves"],
-		"last_io": values["master_last_io_seconds_ago"],
+		"last_io":   values["master_last_io_seconds_ago"],
 	}
 
 	return redisMapping, nil

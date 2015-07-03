@@ -9,7 +9,7 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type GraphiteShipper struct{
+type GraphiteShipper struct {
 	debug   bool
 	enabled bool
 	host    string
@@ -17,7 +17,7 @@ type GraphiteShipper struct{
 	port    string
 }
 
-func (this *GraphiteShipper) Enabled() (bool) {
+func (this *GraphiteShipper) Enabled() bool {
 	return this.enabled
 }
 

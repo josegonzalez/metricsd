@@ -5,13 +5,13 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type LogstashRedisShipper struct{
+type LogstashRedisShipper struct {
 	enabled bool
 	list    string
 	url     string
 }
 
-func (this *LogstashRedisShipper) Enabled() (bool) {
+func (this *LogstashRedisShipper) Enabled() bool {
 	return this.enabled
 }
 
