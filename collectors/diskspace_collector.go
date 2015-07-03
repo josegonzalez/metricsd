@@ -15,21 +15,7 @@ import "github.com/vaughan0/go-ini"
 type DiskspaceCollector struct {
 	enabled        bool
 	excludeFilters []string
-}
-
-var filesystems = map[string]bool{
-	"ext2":      true,
-	"ext3":      true,
-	"ext4":      true,
-	"xfs":       true,
-	"glusterfs": true,
-	"rootfs":    true,
-	"nfs":       true,
-	"ntfs":      true,
-	"hfs":       true,
-	"fat32":     true,
-	"fat16":     true,
-	"btrfs":     true,
+	filesystems    map[string]bool
 }
 
 func (c *DiskspaceCollector) Enabled() bool {
@@ -42,17 +28,27 @@ func (c *DiskspaceCollector) State(state bool) {
 
 func (c *DiskspaceCollector) Setup(conf ini.File) {
 	c.State(true)
+	c.filesystems = map[string]bool{}
 
 	fs, ok := conf.Get("DiskspaceCollector", "filesystems")
 	if ok {
-		for filesystem, _ := range filesystems {
-			filesystems[filesystem] = false
-		}
-
 		enabledFilesystems := strings.Split(fs, ",")
 		for _, enabledFilesystem := range enabledFilesystems {
-			filesystems[strings.TrimSpace(enabledFilesystem)] = true
+			c.filesystems[strings.TrimSpace(enabledFilesystem)] = true
 		}
+	} else {
+		c.filesystems["ext2"] = true
+		c.filesystems["ext3"] = true
+		c.filesystems["ext4"] = true
+		c.filesystems["xfs"] = true
+		c.filesystems["glusterfs"] = true
+		c.filesystems["rootfs"] = true
+		c.filesystems["nfs"] = true
+		c.filesystems["ntfs"] = true
+		c.filesystems["hfs"] = true
+		c.filesystems["fat32"] = true
+		c.filesystems["fat16"] = true
+		c.filesystems["btrfs"] = true
 	}
 
 	ef, ok := conf.Get("DiskspaceCollector", "exclude_filters")
@@ -75,7 +71,7 @@ func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
 	diskspaceMapping := map[string]mappings.MetricMap{}
 
 	for _, mount := range stat.Mounts {
-		if !filesystems[mount.FSType] {
+		if !c.filesystems[mount.FSType] {
 			continue
 		}
 		syscall.Statfs(mount.MountPoint, &statfs_t)
