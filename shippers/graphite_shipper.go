@@ -10,13 +10,12 @@ import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
 type GraphiteShipper struct{
+	debug   bool
 	enabled bool
+	host    string
+	prefix  string
+	port    string
 }
-
-var debug bool
-var graphiteHost string
-var graphitePort string
-var prefix string
 
 func (this *GraphiteShipper) Enabled() (bool) {
 	return this.enabled
@@ -31,27 +30,27 @@ func (this *GraphiteShipper) Setup(conf ini.File) {
 
 	useDebug, ok := conf.Get("GraphiteShipper", "debug")
 	if ok && useDebug == "true" {
-		debug = true
+		this.debug = true
 	} else {
-		debug = false
+		this.debug = false
 	}
 
-	graphiteHost = "127.0.0.1"
-	graphitePort = "2003"
+	this.host = "127.0.0.1"
+	this.port = "2003"
 	useGraphiteUrl, ok := conf.Get("GraphiteShipper", "url")
 	if ok {
 		graphiteUrl, err := url.Parse(useGraphiteUrl)
 		if err == nil {
 			splitted := strings.Split(graphiteUrl.Host, ":")
-			graphiteHost, graphitePort = splitted[0], "2003"
+			this.host, this.port = splitted[0], "2003"
 			switch {
 			case len(splitted) > 2:
 				logrus.Warning("error parsing graphite url")
 				logrus.Warning("using default 127.0.0.1:2003 for graphite url")
 			case len(splitted) > 1:
-				graphiteHost, graphitePort = splitted[0], splitted[1]
+				this.host, this.port = splitted[0], splitted[1]
 			default:
-				graphiteHost, graphitePort = splitted[0], "2003"
+				this.host, this.port = splitted[0], "2003"
 			}
 		} else {
 			logrus.Warning("error parsing graphite url: %s", err)
@@ -61,12 +60,12 @@ func (this *GraphiteShipper) Setup(conf ini.File) {
 
 	usePrefix, ok := conf.Get("GraphiteShipper", "prefix")
 	if ok {
-		prefix = fmt.Sprintf("%s.", usePrefix)
+		this.prefix = fmt.Sprintf("%s.", usePrefix)
 	}
 }
 
 func (this *GraphiteShipper) Ship(logs structs.MetricSlice) error {
-	con, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", graphiteHost, graphitePort), 1*time.Second)
+	con, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", this.host, this.port), 1*time.Second)
 	if err != nil {
 		logrus.Warning("connecting to graphite failed with err: ", err)
 		return err
@@ -74,8 +73,8 @@ func (this *GraphiteShipper) Ship(logs structs.MetricSlice) error {
 	defer con.Close()
 
 	for _, item := range logs {
-		serialized := item.ToGraphite(prefix)
-		if debug {
+		serialized := item.ToGraphite(this.prefix)
+		if this.debug {
 			fmt.Printf("%s\n", serialized)
 		}
 		fmt.Fprintln(con, serialized)
