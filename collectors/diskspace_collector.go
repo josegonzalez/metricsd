@@ -28,28 +28,7 @@ func (c *DiskspaceCollector) State(state bool) {
 
 func (c *DiskspaceCollector) Setup(conf ini.File) {
 	c.State(true)
-	c.filesystems = map[string]bool{}
-
-	fs, ok := conf.Get("DiskspaceCollector", "filesystems")
-	if ok {
-		enabledFilesystems := strings.Split(fs, ",")
-		for _, enabledFilesystem := range enabledFilesystems {
-			c.filesystems[strings.TrimSpace(enabledFilesystem)] = true
-		}
-	} else {
-		c.filesystems["ext2"] = true
-		c.filesystems["ext3"] = true
-		c.filesystems["ext4"] = true
-		c.filesystems["xfs"] = true
-		c.filesystems["glusterfs"] = true
-		c.filesystems["rootfs"] = true
-		c.filesystems["nfs"] = true
-		c.filesystems["ntfs"] = true
-		c.filesystems["hfs"] = true
-		c.filesystems["fat32"] = true
-		c.filesystems["fat16"] = true
-		c.filesystems["btrfs"] = true
-	}
+	c.setFilesystems(conf)
 
 	ef, ok := conf.Get("DiskspaceCollector", "exclude_filters")
 	if ok {
@@ -137,6 +116,31 @@ func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 	}
 
 	return report, nil
+}
+
+func (c *DiskspaceCollector) setFilesystems(conf ini.File) {
+	c.filesystems = map[string]bool{}
+
+	fs, ok := conf.Get("DiskspaceCollector", "filesystems")
+	if ok {
+		enabledFilesystems := strings.Split(fs, ",")
+		for _, enabledFilesystem := range enabledFilesystems {
+			c.filesystems[strings.TrimSpace(enabledFilesystem)] = true
+		}
+	} else {
+		c.filesystems["ext2"] = true
+		c.filesystems["ext3"] = true
+		c.filesystems["ext4"] = true
+		c.filesystems["xfs"] = true
+		c.filesystems["glusterfs"] = true
+		c.filesystems["rootfs"] = true
+		c.filesystems["nfs"] = true
+		c.filesystems["ntfs"] = true
+		c.filesystems["hfs"] = true
+		c.filesystems["fat32"] = true
+		c.filesystems["fat16"] = true
+		c.filesystems["btrfs"] = true
+	}
 }
 
 func parseMountpoint(device string) string {
