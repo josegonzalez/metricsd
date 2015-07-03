@@ -7,13 +7,7 @@ a metrics collecting agent written in go
 You can setup metricsd via the following short script:
 
 ```shell
-go get github.com/c9s/goprocinfo/linux
-go get github.com/fzzy/radix
-go get github.com/josegonzalez/go-radixurl
-go get github.com/ogier/pflag
-go get github.com/Sirupsen/logrus
-go get github.com/vaughan0/go-ini
-
+make dependencies
 go get github.com/josegonzalez/metricsd
 go build github.com/josegonzalez/metricsd
 ```
