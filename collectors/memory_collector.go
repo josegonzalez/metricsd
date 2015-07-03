@@ -22,7 +22,26 @@ func (this *MemoryCollector) Setup(conf ini.File) {
 	this.State(true)
 }
 
-func (this *MemoryCollector) Collect() (mappings.MetricMap, error) {
+func (this *MemoryCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
+	values, _ := this.collect()
+
+	if values != nil {
+		for k, v := range values {
+			metric := structs.BuildMetric("MemoryCollector", "memory", "gauge", k, v, structs.FieldsMap{
+				"unit":      "B",
+				"where":     "system_memory",
+				"raw_key":   k,
+				"raw_value": v,
+			})
+			report = append(report, metric)
+		}
+	}
+
+	return report, nil
+}
+
+func (this *MemoryCollector) collect() (mappings.MetricMap, error) {
 	stat, err := linux.ReadMemInfo("/proc/meminfo")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -46,23 +65,4 @@ func (this *MemoryCollector) Collect() (mappings.MetricMap, error) {
 		"vmalloc_chunk": stat.VmallocChunk,
 		"committed_as":  stat.Committed_AS,
 	}, nil
-}
-
-func (this *MemoryCollector) Report() (structs.MetricSlice, error) {
-	var report structs.MetricSlice
-	values, _ := this.Collect()
-
-	if values != nil {
-		for k, v := range values {
-			metric := structs.BuildMetric("MemoryCollector", "memory", "gauge", k, v, structs.FieldsMap{
-				"unit":      "B",
-				"where":     "system_memory",
-				"raw_key":   k,
-				"raw_value": v,
-			})
-			report = append(report, metric)
-		}
-	}
-
-	return report, nil
 }

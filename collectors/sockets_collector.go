@@ -23,28 +23,9 @@ func (this *SocketsCollector) Setup(conf ini.File) {
 	this.State(true)
 }
 
-func (this *SocketsCollector) Collect() (mappings.MetricMap, error) {
-	stat, err := linux.ReadSockStat("/proc/net/sockstat")
-	if err != nil {
-		logrus.Fatal("stat read fail")
-		return nil, err
-	}
-
-	return mappings.MetricMap{
-		"tcp_alloc":  stat.TCPAllocated,
-		"tcp_inuse":  stat.TCPInUse,
-		"tcp_mem":    stat.TCPMemory,
-		"tcp_orphan": stat.TCPOrphan,
-		"tcp_tw":     stat.TCPTimeWait,
-		"udp_inuse":  stat.UDPInUse,
-		"udp_mem":    stat.UDPMemory,
-		"used":       stat.SocketsUsed,
-	}, nil
-}
-
 func (this *SocketsCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	values, _ := this.Collect()
+	values, _ := this.collect()
 
 	if values != nil {
 		for k, v := range values {
@@ -67,4 +48,23 @@ func (this *SocketsCollector) Report() (structs.MetricSlice, error) {
 	}
 
 	return report, nil
+}
+
+func (this *SocketsCollector) collect() (mappings.MetricMap, error) {
+	stat, err := linux.ReadSockStat("/proc/net/sockstat")
+	if err != nil {
+		logrus.Fatal("stat read fail")
+		return nil, err
+	}
+
+	return mappings.MetricMap{
+		"tcp_alloc":  stat.TCPAllocated,
+		"tcp_inuse":  stat.TCPInUse,
+		"tcp_mem":    stat.TCPMemory,
+		"tcp_orphan": stat.TCPOrphan,
+		"tcp_tw":     stat.TCPTimeWait,
+		"udp_inuse":  stat.UDPInUse,
+		"udp_mem":    stat.UDPMemory,
+		"used":       stat.SocketsUsed,
+	}, nil
 }

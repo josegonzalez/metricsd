@@ -23,7 +23,29 @@ func (this *CpuCollector) Setup(conf ini.File) {
 	this.State(true)
 }
 
-func (this *CpuCollector) Collect() (map[string]mappings.MetricMap, error) {
+func (this *CpuCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
+	data, _ := this.collect()
+
+	if data != nil {
+		for cpu, values := range data {
+			for k, v := range values {
+				metric := structs.BuildMetric("CpuCollector", "cpu", "gauge_pct", k, v, structs.FieldsMap{
+					"core":      cpu,
+					"unit":      "Jiff",
+					"raw_key":   k,
+					"raw_value": v,
+				})
+				metric.Path = fmt.Sprintf("cpu.%s", cpu)
+				report = append(report, metric)
+			}
+		}
+	}
+
+	return report, nil
+}
+
+func (this *CpuCollector) collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -48,26 +70,4 @@ func (this *CpuCollector) Collect() (map[string]mappings.MetricMap, error) {
 	}
 
 	return cpuMapping, nil
-}
-
-func (this *CpuCollector) Report() (structs.MetricSlice, error) {
-	var report structs.MetricSlice
-	data, _ := this.Collect()
-
-	if data != nil {
-		for cpu, values := range data {
-			for k, v := range values {
-				metric := structs.BuildMetric("CpuCollector", "cpu", "gauge_pct", k, v, structs.FieldsMap{
-					"core":      cpu,
-					"unit":      "Jiff",
-					"raw_key":   k,
-					"raw_value": v,
-				})
-				metric.Path = fmt.Sprintf("cpu.%s", cpu)
-				report = append(report, metric)
-			}
-		}
-	}
-
-	return report, nil
 }

@@ -34,7 +34,27 @@ func (this *RedisCollector) Setup(conf ini.File) {
 	}
 }
 
-func (this *RedisCollector) Collect() (map[string]mappings.MetricMap, error) {
+func (this *RedisCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
+	data, _ := this.collect()
+
+	if data != nil {
+		// TODO: _ is a prefix
+		for _, values := range data {
+			for k, v := range values {
+				metric := structs.BuildMetric("RedisCollector", "redis", "gauge", k, v, structs.FieldsMap{
+					"raw_key":   k,
+					"raw_value": v,
+				})
+				report = append(report, metric)
+			}
+		}
+	}
+
+	return report, nil
+}
+
+func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 	c, err := radixurl.ConnectToURL(this.url)
 	errHndlr(err)
 	defer c.Close()
@@ -76,6 +96,8 @@ func (this *RedisCollector) Collect() (map[string]mappings.MetricMap, error) {
 		"connected":           values["connected_clients"],
 		"longest_output_list": values["client_longest_output_list"],
 	}
+
+	// TODO
 	// 'cpu.parent.sys': 'used_cpu_sys',
 	// 'cpu.children.sys': 'used_cpu_sys_children',
 	// 'cpu.parent.user': 'used_cpu_user',
@@ -117,26 +139,6 @@ func (this *RedisCollector) Collect() (map[string]mappings.MetricMap, error) {
 	}
 
 	return redisMapping, nil
-}
-
-func (this *RedisCollector) Report() (structs.MetricSlice, error) {
-	var report structs.MetricSlice
-	data, _ := this.Collect()
-
-	if data != nil {
-		// TODO: _ is a prefix
-		for _, values := range data {
-			for k, v := range values {
-				metric := structs.BuildMetric("RedisCollector", "redis", "gauge", k, v, structs.FieldsMap{
-					"raw_key":   k,
-					"raw_value": v,
-				})
-				report = append(report, metric)
-			}
-		}
-	}
-
-	return report, nil
 }
 
 func errHndlr(err error) {

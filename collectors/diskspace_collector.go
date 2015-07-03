@@ -39,7 +39,40 @@ func (this *DiskspaceCollector) Setup(conf ini.File) {
 	}
 }
 
-func (this *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
+func (this *DiskspaceCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
+	data, _ := this.collect()
+
+	if data != nil {
+		units := map[string]string{
+			"gigabyte": "GB",
+			"byte":     "B",
+			"inodes":   "Ino",
+		}
+
+		for mountpoint, values := range data {
+			// TODO: Add exclude_filters support
+			mountpoint = parseMountpoint(mountpoint)
+			for k, v := range values {
+				s := strings.Split(k, "_")
+				unit, mtype := s[0], s[1]
+
+				metric := structs.BuildMetric("DiskspaceCollector", "diskspace", "gauge", mtype, v, structs.FieldsMap{
+					"mountpoint": mountpoint,
+					"unit":       units[unit],
+					"raw_key":    k,
+					"raw_value":  v,
+				})
+				metric.Path = fmt.Sprintf("diskspace.%s", mountpoint)
+				report = append(report, metric)
+			}
+		}
+	}
+
+	return report, nil
+}
+
+func (this *DiskspaceCollector) collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadMounts("/proc/mounts")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -83,39 +116,6 @@ func (this *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error)
 	}
 
 	return diskspaceMapping, nil
-}
-
-func (this *DiskspaceCollector) Report() (structs.MetricSlice, error) {
-	var report structs.MetricSlice
-	data, _ := this.Collect()
-
-	if data != nil {
-		units := map[string]string{
-			"gigabyte": "GB",
-			"byte":     "B",
-			"inodes":   "Ino",
-		}
-
-		for mountpoint, values := range data {
-			// TODO: Add exclude_filters support
-			mountpoint = parseMountpoint(mountpoint)
-			for k, v := range values {
-				s := strings.Split(k, "_")
-				unit, mtype := s[0], s[1]
-
-				metric := structs.BuildMetric("DiskspaceCollector", "diskspace", "gauge", mtype, v, structs.FieldsMap{
-					"mountpoint": mountpoint,
-					"unit":       units[unit],
-					"raw_key":    k,
-					"raw_value":  v,
-				})
-				metric.Path = fmt.Sprintf("diskspace.%s", mountpoint)
-				report = append(report, metric)
-			}
-		}
-	}
-
-	return report, nil
 }
 
 func (this *DiskspaceCollector) setFilesystems(conf ini.File) {

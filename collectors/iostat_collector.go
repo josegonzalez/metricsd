@@ -24,7 +24,28 @@ func (this *IostatCollector) Setup(conf ini.File) {
 	this.State(true)
 }
 
-func (this *IostatCollector) Collect() (map[string]mappings.MetricMap, error) {
+func (this *IostatCollector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
+	data, _ := this.collect()
+
+	if data != nil {
+		for device, values := range data {
+			for k, v := range values {
+				metric := structs.BuildMetric("IostatCollector", "iostat", "gauge", k, v, structs.FieldsMap{
+					"device":    device,
+					"raw_key":   k,
+					"raw_value": v,
+				})
+				metric.Path = fmt.Sprintf("iostat.%s", device)
+				report = append(report, metric)
+			}
+		}
+	}
+
+	return report, nil
+}
+
+func (this *IostatCollector) collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadDiskStats("/proc/diskstats")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -72,25 +93,4 @@ func (this *IostatCollector) Collect() (map[string]mappings.MetricMap, error) {
 	}
 
 	return diskusageMapping, nil
-}
-
-func (this *IostatCollector) Report() (structs.MetricSlice, error) {
-	var report structs.MetricSlice
-	data, _ := this.Collect()
-
-	if data != nil {
-		for device, values := range data {
-			for k, v := range values {
-				metric := structs.BuildMetric("IostatCollector", "iostat", "gauge", k, v, structs.FieldsMap{
-					"device":    device,
-					"raw_key":   k,
-					"raw_value": v,
-				})
-				metric.Path = fmt.Sprintf("iostat.%s", device)
-				report = append(report, metric)
-			}
-		}
-	}
-
-	return report, nil
 }

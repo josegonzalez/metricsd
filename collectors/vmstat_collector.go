@@ -22,24 +22,9 @@ func (this *VmstatCollector) Setup(conf ini.File) {
 	this.State(true)
 }
 
-func (this *VmstatCollector) Collect() (mappings.MetricMap, error) {
-	stat, err := linux.ReadVMStat("/proc/vmstat")
-	if err != nil {
-		logrus.Fatal("stat read fail")
-		return nil, err
-	}
-
-	return mappings.MetricMap{
-		"paging_in": stat.PagePagein,
-		"pagingout": stat.PagePageout,
-		"swap_in":   stat.PageSwapin,
-		"swap_out":  stat.PageSwapout,
-	}, nil
-}
-
 func (this *VmstatCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	values, _ := this.Collect()
+	values, _ := this.collect()
 
 	if values != nil {
 		for k, v := range values {
@@ -53,4 +38,19 @@ func (this *VmstatCollector) Report() (structs.MetricSlice, error) {
 	}
 
 	return report, nil
+}
+
+func (this *VmstatCollector) collect() (mappings.MetricMap, error) {
+	stat, err := linux.ReadVMStat("/proc/vmstat")
+	if err != nil {
+		logrus.Fatal("stat read fail")
+		return nil, err
+	}
+
+	return mappings.MetricMap{
+		"paging_in": stat.PagePagein,
+		"pagingout": stat.PagePageout,
+		"swap_in":   stat.PageSwapin,
+		"swap_out":  stat.PageSwapout,
+	}, nil
 }
