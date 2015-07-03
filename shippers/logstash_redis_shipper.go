@@ -7,10 +7,9 @@ import "github.com/vaughan0/go-ini"
 
 type LogstashRedisShipper struct{
 	enabled bool
+	list    string
+	url     string
 }
-
-var redisList string
-var redisUrl string
 
 func (this *LogstashRedisShipper) Enabled() (bool) {
 	return this.enabled
@@ -23,21 +22,21 @@ func (this *LogstashRedisShipper) State(state bool) {
 func (this *LogstashRedisShipper) Setup(conf ini.File) {
 	this.State(true)
 
-	redisList = "metricsd"
-	useRedisList, ok := conf.Get("LogstashRedisShipper", "list")
-	if ok {
-		redisList = useRedisList
+	if list, ok := conf.Get("LogstashRedisShipper", "list"); ok {
+		this.list = list
+	} else {
+		this.list = "metricsd"
 	}
 
-	redisUrl = "redis://127.0.0.1:6379/0"
-	useRedisUrl, ok := conf.Get("LogstashRedisShipper", "url")
-	if ok {
-		redisUrl = useRedisUrl
+	if url, ok := conf.Get("LogstashRedisShipper", "url"); ok {
+		this.url = url
+	} else {
+		this.url = "redis://127.0.0.1:6379/0"
 	}
 }
 
 func (this *LogstashRedisShipper) Ship(logs structs.MetricSlice) error {
-	c, err := radixurl.ConnectToURL(redisUrl)
+	c, err := radixurl.ConnectToURL(this.url)
 	errHndlr(err)
 	defer c.Close()
 
@@ -50,34 +49,34 @@ func (this *LogstashRedisShipper) Ship(logs structs.MetricSlice) error {
 
 	length := len(logs)
 	if length == 10 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9])
 		errHndlr(r.Err)
 	} else if length == 9 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8])
 		errHndlr(r.Err)
 	} else if length == 8 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7])
 		errHndlr(r.Err)
 	} else if length == 7 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3], list[4], list[5], list[6])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2], list[3], list[4], list[5], list[6])
 		errHndlr(r.Err)
 	} else if length == 6 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3], list[4], list[5])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2], list[3], list[4], list[5])
 		errHndlr(r.Err)
 	} else if length == 5 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3], list[4])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2], list[3], list[4])
 		errHndlr(r.Err)
 	} else if length == 4 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2], list[3])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2], list[3])
 		errHndlr(r.Err)
 	} else if length == 3 {
-		r := c.Cmd("rpush", redisList, list[0], list[1], list[2])
+		r := c.Cmd("rpush", this.list, list[0], list[1], list[2])
 		errHndlr(r.Err)
 	} else if length == 2 {
-		r := c.Cmd("rpush", redisList, list[0], list[1])
+		r := c.Cmd("rpush", this.list, list[0], list[1])
 		errHndlr(r.Err)
 	} else if length == 1 {
-		r := c.Cmd("rpush", redisList, list[0])
+		r := c.Cmd("rpush", this.list, list[0])
 		errHndlr(r.Err)
 	}
 
