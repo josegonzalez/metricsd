@@ -61,7 +61,7 @@ func (c *SocketsCollector) Report() (structs.MetricSlice, error) {
 				metricType = splitted[1]
 			}
 
-			metric := structs.BuildMetric("sockets", "gauge", metricType, v, fieldsMap)
+			metric := structs.BuildMetric("SocketsCollector", "sockets", "gauge", metricType, v, fieldsMap)
 			report = append(report, metric)
 		}
 	}

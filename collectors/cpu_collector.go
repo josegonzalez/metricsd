@@ -57,7 +57,7 @@ func (c *CpuCollector) Report() (structs.MetricSlice, error) {
 	if data != nil {
 		for cpu, values := range data {
 			for k, v := range values {
-				metric := structs.BuildMetric("cpu", "gauge_pct", k, v, structs.FieldsMap{
+				metric := structs.BuildMetric("CpuCollector", "cpu", "gauge_pct", k, v, structs.FieldsMap{
 					"core":      cpu,
 					"unit":      "Jiff",
 					"raw_key":   k,

@@ -103,7 +103,7 @@ func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 				s := strings.Split(k, "_")
 				unit, mtype := s[0], s[1]
 
-				metric := structs.BuildMetric("diskspace", "gauge", mtype, v, structs.FieldsMap{
+				metric := structs.BuildMetric("DiskspaceCollector", "diskspace", "gauge", mtype, v, structs.FieldsMap{
 					"mountpoint": mountpoint,
 					"unit":       units[unit],
 					"raw_key":    k,

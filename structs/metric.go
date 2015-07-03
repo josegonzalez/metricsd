@@ -7,6 +7,7 @@ import "time"
 import "github.com/Sirupsen/logrus"
 
 type Metric struct {
+	Collector  string
 	Path       string
 	From       string
 	Name       string
@@ -36,8 +37,9 @@ type FieldsMap map[string]interface{}
 
 type MetricSlice []*Metric
 
-func BuildMetric(from string, metricType string, name string, value interface{}, data FieldsMap) *Metric {
+func BuildMetric(collector string, from string, metricType string, name string, value interface{}, data FieldsMap) *Metric {
 	return &Metric{
+		Collector:  collector,
 		From:       from,
 		Name:       name,
 		Value:      value,
