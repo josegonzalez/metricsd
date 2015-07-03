@@ -10,19 +10,19 @@ type MemoryCollector struct {
 	enabled bool
 }
 
-func (c *MemoryCollector) Enabled() bool {
-	return c.enabled
+func (this *MemoryCollector) Enabled() bool {
+	return this.enabled
 }
 
-func (c *MemoryCollector) State(state bool) {
-	c.enabled = state
+func (this *MemoryCollector) State(state bool) {
+	this.enabled = state
 }
 
-func (c *MemoryCollector) Setup(conf ini.File) {
-	c.State(true)
+func (this *MemoryCollector) Setup(conf ini.File) {
+	this.State(true)
 }
 
-func (c *MemoryCollector) Collect() (mappings.MetricMap, error) {
+func (this *MemoryCollector) Collect() (mappings.MetricMap, error) {
 	stat, err := linux.ReadMemInfo("/proc/meminfo")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -48,9 +48,9 @@ func (c *MemoryCollector) Collect() (mappings.MetricMap, error) {
 	}, nil
 }
 
-func (c *MemoryCollector) Report() (structs.MetricSlice, error) {
+func (this *MemoryCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	values, _ := c.Collect()
+	values, _ := this.Collect()
 
 	if values != nil {
 		for k, v := range values {

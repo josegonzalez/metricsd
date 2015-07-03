@@ -12,16 +12,16 @@ type LogstashRedisShipper struct{
 var redisList string
 var redisUrl string
 
-func (shipper *LogstashRedisShipper) Enabled() (bool) {
-	return shipper.enabled
+func (this *LogstashRedisShipper) Enabled() (bool) {
+	return this.enabled
 }
 
-func (shipper *LogstashRedisShipper) State(state bool) {
-	shipper.enabled = state
+func (this *LogstashRedisShipper) State(state bool) {
+	this.enabled = state
 }
 
-func (shipper *LogstashRedisShipper) Setup(conf ini.File) {
-	shipper.State(true)
+func (this *LogstashRedisShipper) Setup(conf ini.File) {
+	this.State(true)
 
 	redisList = "metricsd"
 	useRedisList, ok := conf.Get("LogstashRedisShipper", "list")
@@ -36,7 +36,7 @@ func (shipper *LogstashRedisShipper) Setup(conf ini.File) {
 	}
 }
 
-func (shipper *LogstashRedisShipper) Ship(logs structs.MetricSlice) error {
+func (this *LogstashRedisShipper) Ship(logs structs.MetricSlice) error {
 	c, err := radixurl.ConnectToURL(redisUrl)
 	errHndlr(err)
 	defer c.Close()

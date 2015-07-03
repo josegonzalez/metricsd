@@ -11,19 +11,19 @@ type SocketsCollector struct {
 	enabled bool
 }
 
-func (c *SocketsCollector) Enabled() bool {
-	return c.enabled
+func (this *SocketsCollector) Enabled() bool {
+	return this.enabled
 }
 
-func (c *SocketsCollector) State(state bool) {
-	c.enabled = state
+func (this *SocketsCollector) State(state bool) {
+	this.enabled = state
 }
 
-func (c *SocketsCollector) Setup(conf ini.File) {
-	c.State(true)
+func (this *SocketsCollector) Setup(conf ini.File) {
+	this.State(true)
 }
 
-func (c *SocketsCollector) Collect() (mappings.MetricMap, error) {
+func (this *SocketsCollector) Collect() (mappings.MetricMap, error) {
 	stat, err := linux.ReadSockStat("/proc/net/sockstat")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -42,9 +42,9 @@ func (c *SocketsCollector) Collect() (mappings.MetricMap, error) {
 	}, nil
 }
 
-func (c *SocketsCollector) Report() (structs.MetricSlice, error) {
+func (this *SocketsCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	values, _ := c.Collect()
+	values, _ := this.Collect()
 
 	if values != nil {
 		for k, v := range values {

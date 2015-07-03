@@ -8,19 +8,19 @@ type StdoutShipper struct{
 	enabled bool
 }
 
-func (shipper *StdoutShipper) Enabled() (bool) {
-	return shipper.enabled
+func (this *StdoutShipper) Enabled() (bool) {
+	return this.enabled
 }
 
-func (shipper *StdoutShipper) State(state bool) {
-	shipper.enabled = state
+func (this *StdoutShipper) State(state bool) {
+	this.enabled = state
 }
 
-func (shipper *StdoutShipper) Setup(_ ini.File) {
-	shipper.State(true)
+func (this *StdoutShipper) Setup(_ ini.File) {
+	this.State(true)
 }
 
-func (shipper *StdoutShipper) Ship(logs structs.MetricSlice) error {
+func (this *StdoutShipper) Ship(logs structs.MetricSlice) error {
 	for _, item := range logs {
 		serialized := item.ToJson()
 		fmt.Printf("%s\n", string(serialized))

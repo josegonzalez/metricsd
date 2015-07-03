@@ -19,16 +19,16 @@ var elasticsearchUrl string
 var index string
 var metricType string
 
-func (shipper *LogstashElasticsearchShipper) Enabled() (bool) {
-	return shipper.enabled
+func (this *LogstashElasticsearchShipper) Enabled() (bool) {
+	return this.enabled
 }
 
-func (shipper *LogstashElasticsearchShipper) State(state bool) {
-	shipper.enabled = state
+func (this *LogstashElasticsearchShipper) State(state bool) {
+	this.enabled = state
 }
 
-func (shipper *LogstashElasticsearchShipper) Setup(conf ini.File) {
-	shipper.State(true)
+func (this *LogstashElasticsearchShipper) Setup(conf ini.File) {
+	this.State(true)
 
 	elasticsearchUrl = "http://127.0.0.1:9200"
 	useElasticsearchUrl, ok := conf.Get("LogstashElasticsearchShipper", "url")
@@ -51,7 +51,7 @@ func (shipper *LogstashElasticsearchShipper) Setup(conf ini.File) {
 	SetupTemplate()
 }
 
-func (shipper *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
+func (this *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
 	action := actionMap{
 		"index": indexMap{
 			"_index": index,

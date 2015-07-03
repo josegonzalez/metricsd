@@ -53,26 +53,26 @@ func BuildMetric(collector string, from string, metricType string, name string, 
 	}
 }
 
-func (m *Metric) Process(conf ini.File) {
+func (this *Metric) Process(conf ini.File) {
 	if hostname, ok := conf.Get("metricsd", "hostname"); ok {
-		m.Host = hostname
+		this.Host = hostname
 	}
 
-	if hostname, ok := conf.Get(m.Collector, "hostname"); ok {
-		m.Host = hostname
+	if hostname, ok := conf.Get(this.Collector, "hostname"); ok {
+		this.Host = hostname
 	}
 }
 
-func (m *Metric) ToMap() map[string]interface{} {
+func (this *Metric) ToMap() map[string]interface{} {
 	data := make(map[string]interface{})
-	data["@timestamp"] = m.Timestamp.Format("2006-01-02T15:04:05.000Z")
+	data["@timestamp"] = this.Timestamp.Format("2006-01-02T15:04:05.000Z")
 	data["@version"] = "1"
-	data["collector"] = m.From
-	data["type"] = m.Name
-	data["result"] = m.Value
-	data["target_type"] = m.MetricType
+	data["collector"] = this.From
+	data["type"] = this.Name
+	data["result"] = this.Value
+	data["target_type"] = this.MetricType
 
-	for k, v := range m.Data {
+	for k, v := range this.Data {
 		_, exists := data[k]
 		if exists {
 			data[fmt.Sprintf("fields.%s", k)] = v
@@ -82,14 +82,14 @@ func (m *Metric) ToMap() map[string]interface{} {
 	}
 
 	if _, ok := data["host"]; !ok {
-		data["host"] = m.Host
+		data["host"] = this.Host
 	}
 
 	return data
 }
 
-func (m *Metric) ToJson() []byte {
-	data := m.ToMap()
+func (this *Metric) ToJson() []byte {
+	data := this.ToMap()
 
 	serialized, err := json.Marshal(data)
 	if err != nil {
@@ -99,14 +99,14 @@ func (m *Metric) ToJson() []byte {
 	return serialized
 }
 
-func (m *Metric) ToGraphite(prefix string) (response string) {
-	path := m.From
-	if m.Path != "" {
-		path = m.Path
+func (this *Metric) ToGraphite(prefix string) (response string) {
+	path := this.From
+	if this.Path != "" {
+		path = this.Path
 	}
-	key := fmt.Sprintf("%s.%s.%s", m.Host, path, m.Name)
+	key := fmt.Sprintf("%s.%s.%s", this.Host, path, this.Name)
 	if prefix != "" {
 		key = fmt.Sprintf("%s%s", prefix, key)
 	}
-	return fmt.Sprintf("%s %v %d", key, m.Value, int32(m.Timestamp.Unix()))
+	return fmt.Sprintf("%s %v %d", key, this.Value, int32(this.Timestamp.Unix()))
 }

@@ -10,19 +10,19 @@ type LoadAvgCollector struct {
 	enabled bool
 }
 
-func (c *LoadAvgCollector) Enabled() bool {
-	return c.enabled
+func (this *LoadAvgCollector) Enabled() bool {
+	return this.enabled
 }
 
-func (c *LoadAvgCollector) State(state bool) {
-	c.enabled = state
+func (this *LoadAvgCollector) State(state bool) {
+	this.enabled = state
 }
 
-func (c *LoadAvgCollector) Setup(conf ini.File) {
-	c.State(true)
+func (this *LoadAvgCollector) Setup(conf ini.File) {
+	this.State(true)
 }
 
-func (c *LoadAvgCollector) Collect() (mappings.MetricMap, error) {
+func (this *LoadAvgCollector) Collect() (mappings.MetricMap, error) {
 	stat, err := linux.ReadLoadAvg("/proc/loadavg")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -38,9 +38,9 @@ func (c *LoadAvgCollector) Collect() (mappings.MetricMap, error) {
 	}, nil
 }
 
-func (c *LoadAvgCollector) Report() (structs.MetricSlice, error) {
+func (this *LoadAvgCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	values, _ := c.Collect()
+	values, _ := this.Collect()
 
 	if values != nil {
 		for k, v := range values {

@@ -18,28 +18,28 @@ type DiskspaceCollector struct {
 	filesystems    map[string]bool
 }
 
-func (c *DiskspaceCollector) Enabled() bool {
-	return c.enabled
+func (this *DiskspaceCollector) Enabled() bool {
+	return this.enabled
 }
 
-func (c *DiskspaceCollector) State(state bool) {
-	c.enabled = state
+func (this *DiskspaceCollector) State(state bool) {
+	this.enabled = state
 }
 
-func (c *DiskspaceCollector) Setup(conf ini.File) {
-	c.State(true)
-	c.setFilesystems(conf)
+func (this *DiskspaceCollector) Setup(conf ini.File) {
+	this.State(true)
+	this.setFilesystems(conf)
 
 	ef, ok := conf.Get("DiskspaceCollector", "exclude_filters")
 	if ok {
 		excludeFilters := strings.Split(ef, ",")
 		for _, excludeFilter := range excludeFilters {
-			c.excludeFilters = append(c.excludeFilters, strings.TrimSpace(excludeFilter))
+			this.excludeFilters = append(this.excludeFilters, strings.TrimSpace(excludeFilter))
 		}
 	}
 }
 
-func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
+func (this *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadMounts("/proc/mounts")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -50,7 +50,7 @@ func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
 	diskspaceMapping := map[string]mappings.MetricMap{}
 
 	for _, mount := range stat.Mounts {
-		if !c.filesystems[mount.FSType] {
+		if !this.filesystems[mount.FSType] {
 			continue
 		}
 		syscall.Statfs(mount.MountPoint, &statfs_t)
@@ -85,9 +85,9 @@ func (c *DiskspaceCollector) Collect() (map[string]mappings.MetricMap, error) {
 	return diskspaceMapping, nil
 }
 
-func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
+func (this *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	data, _ := c.Collect()
+	data, _ := this.Collect()
 
 	if data != nil {
 		units := map[string]string{
@@ -118,28 +118,28 @@ func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 	return report, nil
 }
 
-func (c *DiskspaceCollector) setFilesystems(conf ini.File) {
-	c.filesystems = map[string]bool{}
+func (this *DiskspaceCollector) setFilesystems(conf ini.File) {
+	this.filesystems = map[string]bool{}
 
 	fs, ok := conf.Get("DiskspaceCollector", "filesystems")
 	if ok {
 		enabledFilesystems := strings.Split(fs, ",")
 		for _, enabledFilesystem := range enabledFilesystems {
-			c.filesystems[strings.TrimSpace(enabledFilesystem)] = true
+			this.filesystems[strings.TrimSpace(enabledFilesystem)] = true
 		}
 	} else {
-		c.filesystems["ext2"] = true
-		c.filesystems["ext3"] = true
-		c.filesystems["ext4"] = true
-		c.filesystems["xfs"] = true
-		c.filesystems["glusterfs"] = true
-		c.filesystems["rootfs"] = true
-		c.filesystems["nfs"] = true
-		c.filesystems["ntfs"] = true
-		c.filesystems["hfs"] = true
-		c.filesystems["fat32"] = true
-		c.filesystems["fat16"] = true
-		c.filesystems["btrfs"] = true
+		this.filesystems["ext2"] = true
+		this.filesystems["ext3"] = true
+		this.filesystems["ext4"] = true
+		this.filesystems["xfs"] = true
+		this.filesystems["glusterfs"] = true
+		this.filesystems["rootfs"] = true
+		this.filesystems["nfs"] = true
+		this.filesystems["ntfs"] = true
+		this.filesystems["hfs"] = true
+		this.filesystems["fat32"] = true
+		this.filesystems["fat16"] = true
+		this.filesystems["btrfs"] = true
 	}
 }
 

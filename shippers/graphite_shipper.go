@@ -18,16 +18,16 @@ var graphiteHost string
 var graphitePort string
 var prefix string
 
-func (shipper *GraphiteShipper) Enabled() (bool) {
-	return shipper.enabled
+func (this *GraphiteShipper) Enabled() (bool) {
+	return this.enabled
 }
 
-func (shipper *GraphiteShipper) State(state bool) {
-	shipper.enabled = state
+func (this *GraphiteShipper) State(state bool) {
+	this.enabled = state
 }
 
-func (shipper *GraphiteShipper) Setup(conf ini.File) {
-	shipper.State(true)
+func (this *GraphiteShipper) Setup(conf ini.File) {
+	this.State(true)
 
 	useDebug, ok := conf.Get("GraphiteShipper", "debug")
 	if ok && useDebug == "true" {
@@ -65,7 +65,7 @@ func (shipper *GraphiteShipper) Setup(conf ini.File) {
 	}
 }
 
-func (shipper *GraphiteShipper) Ship(logs structs.MetricSlice) error {
+func (this *GraphiteShipper) Ship(logs structs.MetricSlice) error {
 	con, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", graphiteHost, graphitePort), 1*time.Second)
 	if err != nil {
 		logrus.Warning("connecting to graphite failed with err: ", err)

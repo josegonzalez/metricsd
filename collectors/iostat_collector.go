@@ -12,19 +12,19 @@ type IostatCollector struct {
 	enabled bool
 }
 
-func (c *IostatCollector) Enabled() bool {
-	return c.enabled
+func (this *IostatCollector) Enabled() bool {
+	return this.enabled
 }
 
-func (c *IostatCollector) State(state bool) {
-	c.enabled = state
+func (this *IostatCollector) State(state bool) {
+	this.enabled = state
 }
 
-func (c *IostatCollector) Setup(conf ini.File) {
-	c.State(true)
+func (this *IostatCollector) Setup(conf ini.File) {
+	this.State(true)
 }
 
-func (c *IostatCollector) Collect() (map[string]mappings.MetricMap, error) {
+func (this *IostatCollector) Collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadDiskStats("/proc/diskstats")
 	if err != nil {
 		logrus.Fatal("stat read fail")
@@ -74,9 +74,9 @@ func (c *IostatCollector) Collect() (map[string]mappings.MetricMap, error) {
 	return diskusageMapping, nil
 }
 
-func (c *IostatCollector) Report() (structs.MetricSlice, error) {
+func (this *IostatCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	data, _ := c.Collect()
+	data, _ := this.Collect()
 
 	if data != nil {
 		for device, values := range data {
