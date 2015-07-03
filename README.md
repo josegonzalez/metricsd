@@ -99,6 +99,9 @@ enabled = true
 [MemoryCollector]
 enabled = true
 
+[RedisCollector]
+enabled = true
+
 [SocketsCollector]
 enabled = true
 

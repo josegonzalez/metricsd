@@ -173,6 +173,7 @@ func getCollectors() []collectors.CollectorInterface {
 	collectorList = append(collectorList, &collectors.IostatCollector{})
 	collectorList = append(collectorList, &collectors.LoadAvgCollector{})
 	collectorList = append(collectorList, &collectors.MemoryCollector{})
+	collectorList = append(collectorList, &collectors.RedisCollector{})
 	collectorList = append(collectorList, &collectors.SocketsCollector{})
 	collectorList = append(collectorList, &collectors.VmstatCollector{})
 
