@@ -34,26 +34,10 @@ func (this *RedisCollector) Setup(conf ini.File) {
 }
 
 func (this *RedisCollector) Report() (structs.MetricSlice, error) {
-	var report structs.MetricSlice
-	data, _ := this.collect()
-
-	if data != nil {
-		// TODO: _ is a prefix
-		for _, values := range data {
-			for k, v := range values {
-				metric := structs.BuildMetric("RedisCollector", "redis", "gauge", k, v, structs.FieldsMap{
-					"raw_key":   k,
-					"raw_value": v,
-				})
-				report = append(report, metric)
-			}
-		}
-	}
-
-	return report, nil
+	return this.collect()
 }
 
-func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
+func (this *RedisCollector) collect() (structs.MetricSlice, error) {
 	c, err := radixurl.ConnectToURL(this.url)
 	if err != nil {
 		return nil, err
@@ -82,7 +66,7 @@ func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 		}
 		res := dbRegexp.FindStringSubmatch(line)
 		if len(res) == 4 {
-			redisMapping[fmt.Sprintf("db%d", res[1])] = mappings.MetricMap{
+			redisMapping[fmt.Sprintf("db%s", res[1])] = mappings.MetricMap{
 				"expires": utils.ParseInt64(res[2]),
 				"keys":    utils.ParseInt64(res[3]),
 			}
@@ -94,19 +78,58 @@ func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 		}
 	}
 
-	// redisMapping["UptimeInSeconds", parseInt64(values["uptime_in_seconds"]))
+	redisMapping = this.processValues(redisMapping, values)
+
+	var report structs.MetricSlice
+	for prefix, values := range redisMapping {
+		for k, v := range values {
+			metric := structs.BuildMetric("RedisCollector", "redis", "gauge", k, v, structs.FieldsMap{
+				"raw_key":   k,
+				"raw_value": v,
+			})
+			metric.Path = fmt.Sprintf("redis.%s", prefix)
+			report = append(report, metric)
+		}
+	}
+
+	metric := structs.BuildMetric("RedisCollector", "redis", "gauge", "sys", values["used_cpu_sys"], structs.FieldsMap{
+		"raw_key":   "sys",
+		"raw_value": values["used_cpu_sys"],
+	})
+	metric.Path = "redis.cpu.parent"
+	report = append(report, metric)
+
+	metric = structs.BuildMetric("RedisCollector", "redis", "gauge", "sys", values["used_cpu_sys_children"], structs.FieldsMap{
+		"raw_key":   "sys",
+		"raw_value": values["used_cpu_sys_children"],
+	})
+	metric.Path = "redis.cpu.children"
+	report = append(report, metric)
+
+	metric = structs.BuildMetric("RedisCollector", "redis", "gauge", "user", values["used_cpu_user"], structs.FieldsMap{
+		"raw_key":   "user",
+		"raw_value": values["used_cpu_user"],
+	})
+	metric.Path = "redis.cpu.parent"
+	report = append(report, metric)
+
+	metric = structs.BuildMetric("RedisCollector", "redis", "gauge", "user", values["used_cpu_user_children"], structs.FieldsMap{
+		"raw_key":   "user",
+		"raw_value": values["used_cpu_user_children"],
+	})
+	metric.Path = "redis.cpu.children"
+	report = append(report, metric)
+
+	return report, nil
+}
+
+func (this *RedisCollector) processValues(redisMapping map[string]mappings.MetricMap, values map[string]string) map[string]mappings.MetricMap {
 	redisMapping["clients"] = mappings.MetricMap{
 		"biggest_input_buf":   values["client_biggest_input_buf"],
 		"blocked":             values["blocked_clients"],
 		"connected":           values["connected_clients"],
 		"longest_output_list": values["client_longest_output_list"],
 	}
-
-	// TODO
-	// 'cpu.parent.sys': 'used_cpu_sys',
-	// 'cpu.children.sys': 'used_cpu_sys_children',
-	// 'cpu.parent.user': 'used_cpu_user',
-	// 'cpu.children.user': 'used_cpu_user_children',
 
 	redisMapping["hash_max_zipmap"] = mappings.MetricMap{
 		"entries": values["hash_max_zipmap_entries"],
@@ -143,5 +166,5 @@ func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 		"last_io":   values["master_last_io_seconds_ago"],
 	}
 
-	return redisMapping, nil
+	return redisMapping
 }
