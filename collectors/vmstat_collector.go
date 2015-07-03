@@ -6,11 +6,11 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type VmstatCollector struct{
+type VmstatCollector struct {
 	enabled bool
 }
 
-func (c *VmstatCollector) Enabled() (bool) {
+func (c *VmstatCollector) Enabled() bool {
 	return c.enabled
 }
 

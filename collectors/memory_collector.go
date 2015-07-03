@@ -6,11 +6,11 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type MemoryCollector struct{
+type MemoryCollector struct {
 	enabled bool
 }
 
-func (c *MemoryCollector) Enabled() (bool) {
+func (c *MemoryCollector) Enabled() bool {
 	return c.enabled
 }
 

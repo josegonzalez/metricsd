@@ -7,11 +7,11 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type SocketsCollector struct{
+type SocketsCollector struct {
 	enabled bool
 }
 
-func (c *SocketsCollector) Enabled() (bool) {
+func (c *SocketsCollector) Enabled() bool {
 	return c.enabled
 }
 

@@ -12,9 +12,9 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type DiskspaceCollector struct{
-	enabled bool
-	excludeFilters []string{}
+type DiskspaceCollector struct {
+	enabled        bool
+	excludeFilters []string
 }
 
 var filesystems = map[string]bool{
@@ -32,7 +32,7 @@ var filesystems = map[string]bool{
 	"btrfs":     true,
 }
 
-func (c *DiskspaceCollector) Enabled() (bool) {
+func (c *DiskspaceCollector) Enabled() bool {
 	return c.enabled
 }
 

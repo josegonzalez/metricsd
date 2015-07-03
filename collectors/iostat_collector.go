@@ -8,11 +8,11 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
-type IostatCollector struct{
+type IostatCollector struct {
 	enabled bool
 }
 
-func (c *IostatCollector) Enabled() (bool) {
+func (c *IostatCollector) Enabled() bool {
 	return c.enabled
 }
 
