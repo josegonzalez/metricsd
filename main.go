@@ -13,12 +13,14 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
+var conf ini.File
+
 func main() {
-	conf := config.Setup()
-	initializeLogging(conf)
-	shippers := getShippers(conf)
-	collectorList := getCollectors(conf)
-	interval := getInterval(conf)
+	conf = config.Setup()
+	initializeLogging()
+	shippers := getShippers()
+	collectorList := getCollectors()
+	interval := getInterval()
 	loop, _ := conf.Get("metricsd", "loop")
 
 	runCollect(shippers, collectorList)
@@ -29,7 +31,7 @@ func main() {
 	}
 }
 
-func getInterval(conf ini.File) time.Duration {
+func getInterval() time.Duration {
 	defaultInterval := 30
 	interval, ok := conf.Get("metricsd", "interval")
 
@@ -78,7 +80,7 @@ func runCollect(shippers []shippers.ShipperInterface, collectorList []collectors
 	reporter_wg.Wait()
 }
 
-func initializeLogging(conf ini.File) {
+func initializeLogging() {
 	if config.LogLevel == "panic" {
 		logrus.SetLevel(logrus.PanicLevel)
 	} else if config.LogLevel == "fatal" {
@@ -136,7 +138,7 @@ func report(c chan *structs.Metric, shippers []shippers.ShipperInterface) {
 	}
 }
 
-func getShippers(conf ini.File) []shippers.ShipperInterface {
+func getShippers() []shippers.ShipperInterface {
 	var shipperList []shippers.ShipperInterface
 	var enabled string
 
@@ -160,7 +162,7 @@ func getShippers(conf ini.File) []shippers.ShipperInterface {
 	return shipperList
 }
 
-func getCollectors(conf ini.File) []collectors.CollectorInterface {
+func getCollectors() []collectors.CollectorInterface {
 	var collectorList []collectors.CollectorInterface
 	var enabled string
 
