@@ -43,3 +43,7 @@ start: build config
 .PHONY: ip
 ip:
 	@ifconfig | grep "inet " | grep -v 127 | grep -v "addr:10.0" | cut -d':' -f2 | cut -d' ' -f1
+
+.PHONY: fmt
+fmt:
+	@find . -name "*.go" -exec go fmt {} \;
