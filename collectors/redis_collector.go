@@ -7,7 +7,6 @@ import "github.com/josegonzalez/go-radixurl"
 import "github.com/josegonzalez/metricsd/mappings"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/josegonzalez/metricsd/utils"
-import "github.com/Sirupsen/logrus"
 import "github.com/vaughan0/go-ini"
 
 type RedisCollector struct {
@@ -56,14 +55,20 @@ func (this *RedisCollector) Report() (structs.MetricSlice, error) {
 
 func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 	c, err := radixurl.ConnectToURL(this.url)
-	errHndlr(err)
+	if err != nil {
+		return nil, err
+	}
 	defer c.Close()
 
 	r := c.Cmd("info")
-	errHndlr(r.Err)
+	if r.Err != nil {
+		return nil, r.Err
+	}
 
 	s, err := r.Str()
-	errHndlr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	dbRegexp := regexp.MustCompile("^db(\\d+):keys=(\\d+),expires=(\\d+)")
 
@@ -139,10 +144,4 @@ func (this *RedisCollector) collect() (map[string]mappings.MetricMap, error) {
 	}
 
 	return redisMapping, nil
-}
-
-func errHndlr(err error) {
-	if err != nil {
-		logrus.Fatal("redis error: ", err)
-	}
 }
