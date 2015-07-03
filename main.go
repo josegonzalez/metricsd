@@ -114,6 +114,7 @@ func report(c chan *structs.Metric, shippers []shippers.ShipperInterface) {
 	var list structs.MetricSlice
 
 	for item := range c {
+		item.Process(conf)
 		list = append(list, item)
 
 		if len(list) == 10 {
