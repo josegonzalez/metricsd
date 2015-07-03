@@ -54,6 +54,13 @@ func BuildMetric(collector string, from string, metricType string, name string, 
 }
 
 func (m *Metric) Process(conf ini.File) {
+	if hostname, ok := conf.Get("metricsd", "hostname"); ok {
+		m.Host = hostname
+	}
+
+	if hostname, ok := conf.Get(m.Collector, "hostname"); ok {
+		m.Host = hostname
+	}
 }
 
 func (m *Metric) ToMap() map[string]interface{} {
