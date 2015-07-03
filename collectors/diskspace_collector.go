@@ -14,6 +14,7 @@ import "github.com/vaughan0/go-ini"
 
 type DiskspaceCollector struct{
 	enabled bool
+	excludeFilters []string{}
 }
 
 var filesystems = map[string]bool{
@@ -30,8 +31,6 @@ var filesystems = map[string]bool{
 	"fat16":     true,
 	"btrfs":     true,
 }
-
-var excludeFilters = []string{}
 
 func (c *DiskspaceCollector) Enabled() (bool) {
 	return c.enabled
@@ -60,7 +59,7 @@ func (c *DiskspaceCollector) Setup(conf ini.File) {
 	if ok {
 		excludeFilters := strings.Split(ef, ",")
 		for _, excludeFilter := range excludeFilters {
-			excludeFilters = append(excludeFilters, strings.TrimSpace(excludeFilter))
+			c.excludeFilters = append(c.excludeFilters, strings.TrimSpace(excludeFilter))
 		}
 	}
 }
