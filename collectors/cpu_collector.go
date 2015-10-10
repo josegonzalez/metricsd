@@ -11,21 +11,21 @@ type CpuCollector struct {
 	enabled bool
 }
 
-func (this *CpuCollector) Enabled() bool {
-	return this.enabled
+func (c *CpuCollector) Enabled() bool {
+	return c.enabled
 }
 
-func (this *CpuCollector) State(state bool) {
-	this.enabled = state
+func (c *CpuCollector) State(state bool) {
+	c.enabled = state
 }
 
-func (this *CpuCollector) Setup(conf ini.File) {
-	this.State(true)
+func (c *CpuCollector) Setup(conf ini.File) {
+	c.State(true)
 }
 
-func (this *CpuCollector) Report() (structs.MetricSlice, error) {
+func (c *CpuCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	data, _ := this.collect()
+	data, _ := c.collect()
 
 	if data != nil {
 		for cpu, values := range data {
@@ -45,7 +45,7 @@ func (this *CpuCollector) Report() (structs.MetricSlice, error) {
 	return report, nil
 }
 
-func (this *CpuCollector) collect() (map[string]mappings.MetricMap, error) {
+func (c *CpuCollector) collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadStat("/proc/stat")
 	if err != nil {
 		logrus.Fatal("stat read fail")

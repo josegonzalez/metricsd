@@ -73,7 +73,7 @@ func (s *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
 	newline := []byte("\n")
 
 	for _, item := range logs {
-		serialized := item.ToJson()
+		serialized := item.ToJSON()
 		slice = utils.Extend(slice, serializedAction)
 		slice = utils.Extend(slice, newline)
 		slice = utils.Extend(slice, serialized)

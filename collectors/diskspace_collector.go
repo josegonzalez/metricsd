@@ -18,30 +18,30 @@ type DiskspaceCollector struct {
 	filesystems    map[string]bool
 }
 
-func (this *DiskspaceCollector) Enabled() bool {
-	return this.enabled
+func (c *DiskspaceCollector) Enabled() bool {
+	return c.enabled
 }
 
-func (this *DiskspaceCollector) State(state bool) {
-	this.enabled = state
+func (c *DiskspaceCollector) State(state bool) {
+	c.enabled = state
 }
 
-func (this *DiskspaceCollector) Setup(conf ini.File) {
-	this.State(true)
-	this.setFilesystems(conf)
+func (c *DiskspaceCollector) Setup(conf ini.File) {
+	c.State(true)
+	c.setFilesystems(conf)
 
 	ef, ok := conf.Get("DiskspaceCollector", "exclude_filters")
 	if ok {
 		excludeFilters := strings.Split(ef, ",")
 		for _, excludeFilter := range excludeFilters {
-			this.excludeFilters = append(this.excludeFilters, strings.TrimSpace(excludeFilter))
+			c.excludeFilters = append(c.excludeFilters, strings.TrimSpace(excludeFilter))
 		}
 	}
 }
 
-func (this *DiskspaceCollector) Report() (structs.MetricSlice, error) {
+func (c *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	data, _ := this.collect()
+	data, _ := c.collect()
 
 	if data != nil {
 		units := map[string]string{
@@ -72,31 +72,31 @@ func (this *DiskspaceCollector) Report() (structs.MetricSlice, error) {
 	return report, nil
 }
 
-func (this *DiskspaceCollector) collect() (map[string]mappings.MetricMap, error) {
+func (c *DiskspaceCollector) collect() (map[string]mappings.MetricMap, error) {
 	stat, err := linux.ReadMounts("/proc/mounts")
 	if err != nil {
 		logrus.Fatal("stat read fail")
 		return nil, err
 	}
 
-	var statfs_t syscall.Statfs_t
+	var statfsT syscall.Statfs_t
 	diskspaceMapping := map[string]mappings.MetricMap{}
 
 	for _, mount := range stat.Mounts {
-		if !this.filesystems[mount.FSType] {
+		if !c.filesystems[mount.FSType] {
 			continue
 		}
-		syscall.Statfs(mount.MountPoint, &statfs_t)
-		byte_avail := statfs_t.Bavail * uint64(statfs_t.Bsize)
-		byte_free := statfs_t.Bfree * uint64(statfs_t.Bsize)
+		syscall.Statfs(mount.MountPoint, &statfsT)
+		byteAvail := statfsT.Bavail * uint64(statfsT.Bsize)
+		byteFree := statfsT.Bfree * uint64(statfsT.Bsize)
 
 		diskspaceMapping[mount.MountPoint] = mappings.MetricMap{
-			"byte_avail":     byte_avail,
-			"byte_free":      byte_free,
-			"byte_used":      byte_avail - byte_free,
-			"gigabyte_avail": byte_avail / 1073741824,
-			"gigabyte_free":  byte_free / 1073741824,
-			"gigabyte_used":  (byte_avail - byte_free) / 1073741824,
+			"byte_avail":     byteAvail,
+			"byte_free":      byteFree,
+			"byte_used":      byteAvail - byteFree,
+			"gigabyte_avail": byteAvail / 1073741824,
+			"gigabyte_free":  byteFree / 1073741824,
+			"gigabyte_used":  (byteAvail - byteFree) / 1073741824,
 		}
 	}
 
@@ -118,28 +118,28 @@ func (this *DiskspaceCollector) collect() (map[string]mappings.MetricMap, error)
 	return diskspaceMapping, nil
 }
 
-func (this *DiskspaceCollector) setFilesystems(conf ini.File) {
-	this.filesystems = map[string]bool{}
+func (c *DiskspaceCollector) setFilesystems(conf ini.File) {
+	c.filesystems = map[string]bool{}
 
 	fs, ok := conf.Get("DiskspaceCollector", "filesystems")
 	if ok {
 		enabledFilesystems := strings.Split(fs, ",")
 		for _, enabledFilesystem := range enabledFilesystems {
-			this.filesystems[strings.TrimSpace(enabledFilesystem)] = true
+			c.filesystems[strings.TrimSpace(enabledFilesystem)] = true
 		}
 	} else {
-		this.filesystems["ext2"] = true
-		this.filesystems["ext3"] = true
-		this.filesystems["ext4"] = true
-		this.filesystems["xfs"] = true
-		this.filesystems["glusterfs"] = true
-		this.filesystems["rootfs"] = true
-		this.filesystems["nfs"] = true
-		this.filesystems["ntfs"] = true
-		this.filesystems["hfs"] = true
-		this.filesystems["fat32"] = true
-		this.filesystems["fat16"] = true
-		this.filesystems["btrfs"] = true
+		c.filesystems["ext2"] = true
+		c.filesystems["ext3"] = true
+		c.filesystems["ext4"] = true
+		c.filesystems["xfs"] = true
+		c.filesystems["glusterfs"] = true
+		c.filesystems["rootfs"] = true
+		c.filesystems["nfs"] = true
+		c.filesystems["ntfs"] = true
+		c.filesystems["hfs"] = true
+		c.filesystems["fat32"] = true
+		c.filesystems["fat16"] = true
+		c.filesystems["btrfs"] = true
 	}
 }
 

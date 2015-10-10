@@ -49,7 +49,7 @@ func (s *LogstashRedisShipper) Ship(logs structs.MetricSlice) error {
 	var list []string
 
 	for _, item := range logs {
-		serialized := item.ToJson()
+		serialized := item.ToJSON()
 		list = append(list, string(serialized))
 	}
 

@@ -7,7 +7,7 @@ import "strings"
 import "time"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
-import ini "github.com/vaughan0/go-ini"
+import "github.com/vaughan0/go-ini"
 
 // GraphiteShipper is an exported type that
 // allows shipping metrics to graphite

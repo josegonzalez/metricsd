@@ -14,37 +14,37 @@ type RedisCollector struct {
 	url     string
 }
 
-func (this *RedisCollector) Enabled() bool {
-	return this.enabled
+func (c *RedisCollector) Enabled() bool {
+	return c.enabled
 }
 
-func (this *RedisCollector) State(state bool) {
-	this.enabled = state
+func (c *RedisCollector) State(state bool) {
+	c.enabled = state
 }
 
-func (this *RedisCollector) Setup(conf ini.File) {
-	this.State(true)
+func (c *RedisCollector) Setup(conf ini.File) {
+	c.State(true)
 
-	useRedisUrl, ok := conf.Get("RedisCollector", "url")
+	useRedisURL, ok := conf.Get("RedisCollector", "url")
 	if ok {
-		this.url = useRedisUrl
+		c.url = useRedisURL
 	} else {
-		this.url = "redis://127.0.0.1:6379/0"
+		c.url = "redis://127.0.0.1:6379/0"
 	}
 }
 
-func (this *RedisCollector) Report() (structs.MetricSlice, error) {
-	return this.collect()
+func (c *RedisCollector) Report() (structs.MetricSlice, error) {
+	return c.collect()
 }
 
-func (this *RedisCollector) collect() (structs.MetricSlice, error) {
-	c, err := radixurl.ConnectToURL(this.url)
+func (c *RedisCollector) collect() (structs.MetricSlice, error) {
+	conn, err := radixurl.ConnectToURL(c.url)
 	if err != nil {
 		return nil, err
 	}
-	defer c.Close()
+	defer conn.Close()
 
-	r := c.Cmd("info")
+	r := conn.Cmd("info")
 	if r.Err != nil {
 		return nil, r.Err
 	}
@@ -78,7 +78,7 @@ func (this *RedisCollector) collect() (structs.MetricSlice, error) {
 		}
 	}
 
-	redisMapping = this.processValues(redisMapping, values)
+	redisMapping = c.processValues(redisMapping, values)
 
 	var report structs.MetricSlice
 	for prefix, values := range redisMapping {
@@ -123,7 +123,7 @@ func (this *RedisCollector) collect() (structs.MetricSlice, error) {
 	return report, nil
 }
 
-func (this *RedisCollector) processValues(redisMapping map[string]mappings.MetricMap, values map[string]string) map[string]mappings.MetricMap {
+func (c *RedisCollector) processValues(redisMapping map[string]mappings.MetricMap, values map[string]string) map[string]mappings.MetricMap {
 	redisMapping["clients"] = mappings.MetricMap{
 		"biggest_input_buf":   values["client_biggest_input_buf"],
 		"blocked":             values["blocked_clients"],

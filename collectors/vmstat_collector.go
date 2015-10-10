@@ -10,21 +10,21 @@ type VmstatCollector struct {
 	enabled bool
 }
 
-func (this *VmstatCollector) Enabled() bool {
-	return this.enabled
+func (c *VmstatCollector) Enabled() bool {
+	return c.enabled
 }
 
-func (this *VmstatCollector) State(state bool) {
-	this.enabled = state
+func (c *VmstatCollector) State(state bool) {
+	c.enabled = state
 }
 
-func (this *VmstatCollector) Setup(conf ini.File) {
-	this.State(true)
+func (c *VmstatCollector) Setup(conf ini.File) {
+	c.State(true)
 }
 
-func (this *VmstatCollector) Report() (structs.MetricSlice, error) {
+func (c *VmstatCollector) Report() (structs.MetricSlice, error) {
 	var report structs.MetricSlice
-	values, _ := this.collect()
+	values, _ := c.collect()
 
 	if values != nil {
 		for k, v := range values {
@@ -40,7 +40,7 @@ func (this *VmstatCollector) Report() (structs.MetricSlice, error) {
 	return report, nil
 }
 
-func (this *VmstatCollector) collect() (mappings.MetricMap, error) {
+func (c *VmstatCollector) collect() (mappings.MetricMap, error) {
 	stat, err := linux.ReadVMStat("/proc/vmstat")
 	if err != nil {
 		logrus.Fatal("stat read fail")

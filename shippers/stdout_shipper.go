@@ -28,7 +28,7 @@ func (s *StdoutShipper) Setup(_ ini.File) {
 // Ship sends a list of MetricSlices to stdout
 func (s *StdoutShipper) Ship(logs structs.MetricSlice) error {
 	for _, item := range logs {
-		serialized := item.ToJson()
+		serialized := item.ToJSON()
 		fmt.Printf("%s\n", string(serialized))
 	}
 
