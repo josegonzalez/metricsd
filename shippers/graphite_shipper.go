@@ -7,7 +7,7 @@ import "strings"
 import "time"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
-import "github.com/vaughan0/go-ini"
+import ini "github.com/vaughan0/go-ini"
 
 type GraphiteShipper struct {
 	debug   bool
