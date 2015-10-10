@@ -1,0 +1,31 @@
+package collectors
+
+import "github.com/josegonzalez/metricsd/structs"
+import "github.com/vaughan0/go-ini"
+
+// {{.Name}}Collector is an exported type that
+// allows collecting metrics for {{.Name}}
+type {{.Name}}Collector struct {
+	enabled bool
+}
+
+// Enabled allows checking whether the collector is enabled or not
+func (c *{{.Name}}Collector) Enabled() bool {
+	return c.enabled
+}
+
+// State allows setting the enabled state of the collector
+func (c *{{.Name}}Collector) State(state bool) {
+	c.enabled = state
+}
+
+// Setup configures the collector
+func (c *{{.Name}}Collector) Setup(conf ini.File) {
+	c.State(true)
+}
+
+// Report collects a list of MetricSlices for upstream reporting
+func (c *{{.Name}}Collector) Report() (structs.MetricSlice, error) {
+	var report structs.MetricSlice
+	return report, nil
+}

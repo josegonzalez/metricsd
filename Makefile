@@ -51,3 +51,7 @@ tags:
 .PHONY: ip
 ip:
 	@ifconfig | grep "inet " | grep -v 127 | grep -v "addr:10.0" | cut -d':' -f2 | cut -d' ' -f1
+
+.PHONY: collector
+collector:
+	cd templaters && go run collector.go --names=$(names)
