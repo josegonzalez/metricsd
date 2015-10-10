@@ -44,6 +44,10 @@ start: build config
 fmt:
 	@find . -name "*.go" -exec go fmt {} \;
 
+.PHONY: tags
+tags:
+	gotags -tag-relative=true -R=true -sort=true -f="tags" -fields=+l .
+
 .PHONY: ip
 ip:
 	@ifconfig | grep "inet " | grep -v 127 | grep -v "addr:10.0" | cut -d':' -f2 | cut -d' ' -f1
