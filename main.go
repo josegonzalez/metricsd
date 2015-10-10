@@ -45,19 +45,19 @@ func getInterval() time.Duration {
 }
 
 func runCollect(shippers []shippers.ShipperInterface, collectorList []collectors.CollectorInterface) {
-	var c chan *structs.Metric = make(chan *structs.Metric)
-	var collector_wg sync.WaitGroup
-	var reporter_wg sync.WaitGroup
+	c := make(chan *structs.Metric)
+	var collectorWg sync.WaitGroup
+	var reporterWg sync.WaitGroup
 	var active = 0
 
 	for _, collector := range collectorList {
 		if collector.Enabled() {
-			active += 1
+			active++
 		}
 	}
 
-	collector_wg.Add(active)
-	reporter_wg.Add(1)
+	collectorWg.Add(active)
+	reporterWg.Add(1)
 
 	for _, collector := range collectorList {
 		if !collector.Enabled() {
@@ -65,19 +65,19 @@ func runCollect(shippers []shippers.ShipperInterface, collectorList []collectors
 		}
 
 		go func(collector collectors.CollectorInterface) {
-			defer collector_wg.Done()
+			defer collectorWg.Done()
 			collect(c, collector)
 		}(collector)
 	}
 
 	go func() {
-		defer reporter_wg.Done()
+		defer reporterWg.Done()
 		report(c, shippers)
 	}()
 
-	collector_wg.Wait()
+	collectorWg.Wait()
 	close(c)
-	reporter_wg.Wait()
+	reporterWg.Wait()
 }
 
 func initializeLogging() {
