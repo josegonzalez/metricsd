@@ -9,6 +9,8 @@ import "github.com/josegonzalez/metricsd/structs"
 import "github.com/Sirupsen/logrus"
 import ini "github.com/vaughan0/go-ini"
 
+// GraphiteShipper is an exported type that
+// allows shipping metrics to graphite
 type GraphiteShipper struct {
 	debug   bool
 	enabled bool
@@ -17,40 +19,43 @@ type GraphiteShipper struct {
 	port    string
 }
 
-func (this *GraphiteShipper) Enabled() bool {
-	return this.enabled
+// Enabled allows checking whether the shipper is enabled or not
+func (s *GraphiteShipper) Enabled() bool {
+	return s.enabled
 }
 
-func (this *GraphiteShipper) State(state bool) {
-	this.enabled = state
+// State allows setting the enabled state of the shipper
+func (s *GraphiteShipper) State(state bool) {
+	s.enabled = state
 }
 
-func (this *GraphiteShipper) Setup(conf ini.File) {
-	this.State(true)
+// Setup configures the shipper
+func (s *GraphiteShipper) Setup(conf ini.File) {
+	s.State(true)
 
 	useDebug, ok := conf.Get("GraphiteShipper", "debug")
 	if ok && useDebug == "true" {
-		this.debug = true
+		s.debug = true
 	} else {
-		this.debug = false
+		s.debug = false
 	}
 
-	this.host = "127.0.0.1"
-	this.port = "2003"
+	s.host = "127.0.0.1"
+	s.port = "2003"
 	useGraphiteURL, ok := conf.Get("GraphiteShipper", "url")
 	if ok {
 		graphiteURL, err := url.Parse(useGraphiteURL)
 		if err == nil {
 			splitted := strings.Split(graphiteURL.Host, ":")
-			this.host, this.port = splitted[0], "2003"
+			s.host, s.port = splitted[0], "2003"
 			switch {
 			case len(splitted) > 2:
 				logrus.Warning("error parsing graphite url")
 				logrus.Warning("using default 127.0.0.1:2003 for graphite url")
 			case len(splitted) > 1:
-				this.host, this.port = splitted[0], splitted[1]
+				s.host, s.port = splitted[0], splitted[1]
 			default:
-				this.host, this.port = splitted[0], "2003"
+				s.host, s.port = splitted[0], "2003"
 			}
 		} else {
 			logrus.Warning("error parsing graphite url: %s", err)
@@ -60,12 +65,13 @@ func (this *GraphiteShipper) Setup(conf ini.File) {
 
 	usePrefix, ok := conf.Get("GraphiteShipper", "prefix")
 	if ok {
-		this.prefix = fmt.Sprintf("%s.", usePrefix)
+		s.prefix = fmt.Sprintf("%s.", usePrefix)
 	}
 }
 
-func (this *GraphiteShipper) Ship(logs structs.MetricSlice) error {
-	con, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", this.host, this.port), 1*time.Second)
+// Ship sends a list of MetricSlices to graphite
+func (s *GraphiteShipper) Ship(logs structs.MetricSlice) error {
+	con, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", s.host, s.port), 1*time.Second)
 	if err != nil {
 		logrus.Warning("connecting to graphite failed with err: ", err)
 		return err
@@ -73,8 +79,8 @@ func (this *GraphiteShipper) Ship(logs structs.MetricSlice) error {
 	defer con.Close()
 
 	for _, item := range logs {
-		serialized := item.ToGraphite(this.prefix)
-		if this.debug {
+		serialized := item.ToGraphite(s.prefix)
+		if s.debug {
 			fmt.Printf("%s\n", serialized)
 		}
 		fmt.Fprintln(con, serialized)

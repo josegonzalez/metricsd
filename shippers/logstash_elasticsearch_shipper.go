@@ -11,6 +11,9 @@ import "github.com/vaughan0/go-ini"
 
 type actionMap map[string]indexMap
 type indexMap map[string]string
+
+// LogstashElasticsearchShipper is an exported type that
+// allows shipping metrics to elasticsearch in logstash format
 type LogstashElasticsearchShipper struct {
 	enabled    bool
 	index      string
@@ -18,49 +21,52 @@ type LogstashElasticsearchShipper struct {
 	url        string
 }
 
-func (this *LogstashElasticsearchShipper) Enabled() bool {
-	return this.enabled
+// Enabled allows checking whether the shipper is enabled or not
+func (s *LogstashElasticsearchShipper) Enabled() bool {
+	return s.enabled
 }
 
-func (this *LogstashElasticsearchShipper) State(state bool) {
-	this.enabled = state
+// State allows setting the enabled state of the shipper
+func (s *LogstashElasticsearchShipper) State(state bool) {
+	s.enabled = state
 }
 
-func (this *LogstashElasticsearchShipper) Setup(conf ini.File) {
-	this.State(true)
+// Setup configures the shipper
+func (s *LogstashElasticsearchShipper) Setup(conf ini.File) {
+	s.State(true)
 
 	if url, ok := conf.Get("LogstashElasticsearchShipper", "url"); ok {
-		this.url = url
+		s.url = url
 	} else {
-		this.url = "http://127.0.0.1:9200"
+		s.url = "http://127.0.0.1:9200"
 	}
 
 	if index, ok := conf.Get("LogstashElasticsearchShipper", "enabled"); ok {
-		this.index = index
+		s.index = index
 	} else {
-		this.index = "metricsd-data"
+		s.index = "metricsd-data"
 	}
 
 	if metricType, ok := conf.Get("LogstashElasticsearchShipper", "type"); ok {
-		this.metricType = metricType
+		s.metricType = metricType
 	} else {
-		this.metricType = "metricsd"
+		s.metricType = "metricsd"
 	}
 
-	this.SetupTemplate()
+	s.setupTemplate()
 }
 
-func (this *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
+// Ship sends a list of MetricSlices to elasticsearch
+func (s *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
 	action := actionMap{
 		"index": indexMap{
-			"_index": this.index,
-			"_type":  this.metricType,
+			"_index": s.index,
+			"_type":  s.metricType,
 		},
 	}
 	serializedAction, err := json.Marshal(action)
 	if err != nil {
-		fmt.Errorf("Failed to marshal action to JSON, %v", err)
-		return nil
+		return fmt.Errorf("Failed to marshal action to JSON, %v", err)
 	}
 
 	var slice []byte
@@ -74,7 +80,7 @@ func (this *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
 		slice = utils.Extend(slice, newline)
 	}
 
-	status, err := this.ElasticsearchPost("/_bulk", slice)
+	status, err := s.elasticsearchPost("/_bulk", slice)
 	if err != nil {
 		logrus.Warning("indexing serialized data failed with err: ", err)
 	}
@@ -85,14 +91,14 @@ func (this *LogstashElasticsearchShipper) Ship(logs structs.MetricSlice) error {
 	return nil
 }
 
-func (this *LogstashElasticsearchShipper) ElasticsearchPost(url string, data []byte) (int, error) {
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", this.url, url), bytes.NewBuffer(data))
+func (s *LogstashElasticsearchShipper) elasticsearchPost(url string, data []byte) (int, error) {
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", s.url, url), bytes.NewBuffer(data))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Errorf("Failed to make request, %v", err)
+		err = fmt.Errorf("Failed to make request, %v", err)
 		return 0, err
 	}
 	defer resp.Body.Close()
@@ -100,7 +106,7 @@ func (this *LogstashElasticsearchShipper) ElasticsearchPost(url string, data []b
 	return resp.StatusCode, nil
 }
 
-func (this *LogstashElasticsearchShipper) SetupTemplate() {
+func (s *LogstashElasticsearchShipper) setupTemplate() {
 	template := `
 {
 	"order": 0,
@@ -146,7 +152,7 @@ func (this *LogstashElasticsearchShipper) SetupTemplate() {
 `
 	var data = []byte(template)
 
-	status, err := this.ElasticsearchPost("/_template/metricsd", data)
+	status, err := s.elasticsearchPost("/_template/metricsd", data)
 	if err != nil {
 		logrus.Fatal("creating index failed: ", err)
 	}

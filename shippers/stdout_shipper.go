@@ -4,23 +4,29 @@ import "fmt"
 import "github.com/josegonzalez/metricsd/structs"
 import "github.com/vaughan0/go-ini"
 
+// StdoutShipper is an exported type that
+// allows shipping metrics to stdout
 type StdoutShipper struct {
 	enabled bool
 }
 
-func (this *StdoutShipper) Enabled() bool {
-	return this.enabled
+// Enabled allows checking whether the shipper is enabled or not
+func (s *StdoutShipper) Enabled() bool {
+	return s.enabled
 }
 
-func (this *StdoutShipper) State(state bool) {
-	this.enabled = state
+// State allows setting the enabled state of the shipper
+func (s *StdoutShipper) State(state bool) {
+	s.enabled = state
 }
 
-func (this *StdoutShipper) Setup(_ ini.File) {
-	this.State(true)
+// Setup configures the shipper
+func (s *StdoutShipper) Setup(_ ini.File) {
+	s.State(true)
 }
 
-func (this *StdoutShipper) Ship(logs structs.MetricSlice) error {
+// Ship sends a list of MetricSlices to stdout
+func (s *StdoutShipper) Ship(logs structs.MetricSlice) error {
 	for _, item := range logs {
 		serialized := item.ToJson()
 		fmt.Printf("%s\n", string(serialized))
