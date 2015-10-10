@@ -37,11 +37,11 @@ func (this *GraphiteShipper) Setup(conf ini.File) {
 
 	this.host = "127.0.0.1"
 	this.port = "2003"
-	useGraphiteUrl, ok := conf.Get("GraphiteShipper", "url")
+	useGraphiteURL, ok := conf.Get("GraphiteShipper", "url")
 	if ok {
-		graphiteUrl, err := url.Parse(useGraphiteUrl)
+		graphiteURL, err := url.Parse(useGraphiteURL)
 		if err == nil {
-			splitted := strings.Split(graphiteUrl.Host, ":")
+			splitted := strings.Split(graphiteURL.Host, ":")
 			this.host, this.port = splitted[0], "2003"
 			switch {
 			case len(splitted) > 2:
