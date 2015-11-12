@@ -170,6 +170,7 @@ func getCollectors() []collectors.CollectorInterface {
 	// iostat: (diskstat.go + mangling) /proc/diskstats
 	collectorList = append(collectorList, &collectors.CpuCollector{})
 	collectorList = append(collectorList, &collectors.DiskspaceCollector{})
+	collectorList = append(collectorList, &collectors.ElasticsearchCollector{})
 	collectorList = append(collectorList, &collectors.IostatCollector{})
 	collectorList = append(collectorList, &collectors.LoadAvgCollector{})
 	collectorList = append(collectorList, &collectors.MemoryCollector{})

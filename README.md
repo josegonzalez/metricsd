@@ -87,6 +87,9 @@ enabled = true
 [DiskspaceCollector]
 enabled = true
 
+[ElasticsearchCollector]
+enabled = true
+
 [LoadAvgCollector]
 enabled = true
 
