@@ -32,6 +32,10 @@ config:
 build:
 	go build
 
+.PHONY: test
+test:
+	go test -v ./...
+
 .PHONY: run
 run: config
 	go run main.go

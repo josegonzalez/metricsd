@@ -9,4 +9,5 @@ go:
 install:
     - make dependencies
 script:
-    - go test -v ./...
+    - make build
+    - make test
