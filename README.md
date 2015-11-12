@@ -1,6 +1,6 @@
 # metricsd
 
-a metrics collecting agent written in go
+a metrics collecting agent for linux written in go
 
 # installation
 
