@@ -41,7 +41,7 @@ func (s *LogstashElasticsearchShipper) Setup(conf ini.File) {
 		s.url = "http://127.0.0.1:9200"
 	}
 
-	if index, ok := conf.Get("LogstashElasticsearchShipper", "enabled"); ok {
+	if index, ok := conf.Get("LogstashElasticsearchShipper", "index"); ok {
 		s.index = index
 	} else {
 		s.index = "metricsd-data"
